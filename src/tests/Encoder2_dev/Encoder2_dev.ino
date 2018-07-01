@@ -2,9 +2,14 @@
 
 #define IN_ENC_A D1
 #define IN_ENC_B D2
-#define IN_ENC_BUTTON D7
+#define IN_ENC_BUTTON D5
 
 UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON);
+
+// pin assignments
+
+#define BUTTON_PIN D6
+#define LED_PIN LED_BUILTIN
 
 void setup() {
   Serial.begin(9600);
@@ -13,7 +18,6 @@ void setup() {
 }
 
 void loop() {
-
   encoder.update();
   
   if (encoder.turnedLeft()){
@@ -23,5 +27,9 @@ void loop() {
   if (encoder.turnedRight()){
     Serial.println("RIGHT COMMAND");
   }
-  
+
+  if (encoder.buttonWasPressed()){
+    Serial.println("BUTTON PRESSED");
+  }
+
 }
