@@ -4,6 +4,18 @@
 #include "Configurations.h"
 #define VERSION "v0.0.1"
 
+#include <TaskScheduler.h>
+#include <TaskSchedulerDeclarations.h>
+
+// Task
+Task SensorTask(1000, TASK_FOREVER,&SensorTaskCallback);
+Task DisplayTask(1000, TASK_FOREVER,&DisplayTaskCallback);
+Task ThermostatTask(1000, TASK_FOREVER,&ThermostatTaskCallback);
+Task UserCommandsTask(1000, TASK_FOREVER,&UserCommandsTaskCallback);
+Task SerialDiagnosticTask(5000, TASK_FOREVER,&SerialDiagnosticCallback);
+
+Scheduler runner;
+
 //////////////////////////////////////
 //WIFI + NTP + MQTT
 //////////////////////////////////////
@@ -14,12 +26,14 @@ Connections Conn(conf_SSID,conf_password,conf_ip,conf_dns,conf_subnet,conf_gatew
 //////////////////////////////////////
 // TEMPERATURE SENSOR
 //////////////////////////////////////
-#include "DHTesp.h"
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
 
 float room_temperature=0;
 float room_humidity=0;
 
-DHTesp dht;
+DHT_Unified dht(IN_DHT, DHTTYPE);
 
 //////////////////////////////////////
 //THERMOSTAT
@@ -54,30 +68,46 @@ void setup(){
   Serial.begin(9600);
   InitConnection();
   delay(1000);
+  dht.begin();
+
+  sensor_t sensor;
+  dht.temperature().getSensor(&sensor);
+  dht.humidity().getSensor(&sensor);
   
-  dht.setup(IN_DHT, DHTesp::DHT22);
   disp.begin();
-  
+
+  InitScheduler();
 }
 
 void loop() {
-  Serial.println("[UPDATE] Reading sensors");
-  readSensor();
-  T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
-  
-  delay(1000);
-
-  Serial.println("[UPDATE] Display HomeScreen");
-  disp.clearScreen();
-  disp.showSplashScreen(VERSION);
-  delay(3000);
-  disp.clearScreen();
-  disp.showMainScreen(24.4 , 33.6, Conn.connectionStatus(), Conn.myIP().toString(), colors);
-  delay(10000);
+  runner.execute();
 }
 
-void InitConnection(){
+void InitScheduler(){
+  runner.init();
+  Serial.println("Initialized scheduler");
+  runner.addTask(SensorTask);
+  Serial.println("SensorTask scheduled");
+  runner.addTask(DisplayTask);
+  Serial.println("DisplayTask scheduled");
+  runner.addTask(ThermostatTask);
+  Serial.println("ThermostatTask scheduled");
+  runner.addTask(UserCommandsTask);
+  Serial.println("UserCommandsTask scheduled");
+  runner.addTask(SerialDiagnosticTask);
+  Serial.println("SerialDiagnosticTask scheduled");
   
+  SensorTask.enable();
+  Serial.println("SensorTask enabled");
+  DisplayTask.enable();
+  Serial.println("DisplayTask enabled");
+  ThermostatTask.enable();
+  Serial.println("ThermostatTask enabled");
+  SerialDiagnosticTask.enable();
+  Serial.println("SerialDiagnosticTask enabled");
+  }
+
+void InitConnection(){
   Serial.println("Smart Thermostat Initialization");
   Serial.print("SSID: ");
   Serial.println(conf_SSID);
@@ -101,25 +131,60 @@ void InitConnection(){
   Serial.println("");
 }
 
-void readSensor(){
-  delay(dht.getMinimumSamplingPeriod());
-  room_humidity = dht.getHumidity();
-  int temp = room_humidity *10;
-  room_humidity = temp/10;
+
+void SensorTaskCallback(){
+  sensors_event_t event;
+  dht.temperature().getEvent(&event);
+  dht.humidity().getEvent(&event);
   
-  room_temperature = dht.getTemperature();
-  temp = room_temperature *10;
-  room_temperature = temp/10;
-  
-  Serial.print("[UPDATE] Room temperature: ");
-  Serial.println(room_temperature);
-  Serial.print("[UPDATE] Room humidity: ");
-  Serial.println(room_humidity);
+  if (isnan(event.temperature)) {
+    //Serial.println("Error reading temperature!");
+  }
+  else {
+    room_temperature = event.temperature;
+    int temp = room_temperature *10;
+    room_temperature = temp/10;
+  }
+  dht.humidity().getEvent(&event);
+  if (isnan(event.relative_humidity)) {
+    //Serial.println("Error reading humidity!");
+  }
+  else {
+    room_humidity = event.relative_humidity;
+    int temp = room_humidity *10;
+    room_humidity = temp/10;
+  }
 }
 
+void DisplayTaskCallback(){
+  Serial.println("[UPDATE] Display HomeScreen");
+  disp.clearScreen();
+  disp.showSplashScreen(VERSION);
+  
+  delay(3000);
+  disp.clearScreen();
+  disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), colors);
+  delay(10000);
+  yield();
+}
 
+void ThermostatTaskCallback(){
+  T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
+}
 
+void UserCommandsTaskCallback(){
+  
+}
 
+void SerialDiagnosticCallback(){
+  Serial.println("[UPDATE] Update Thermostat status");
+  Serial.println(T.get_heater_state() ? "ON" : "OFF");
+  Serial.println("[UPDATE] Reading sensors");
+  Serial.print("Room temperature: ");
+  Serial.println(room_temperature);
+  Serial.print("Room humidity: ");
+  Serial.println(room_humidity);
+}
 
 
 
