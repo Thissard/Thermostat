@@ -20,11 +20,11 @@ TX   = 1;
 #include <ESP8266WiFi.h>
 
 // MARTELLAGO
-#define conf_SSID "TIM-29836971"                  //  your network SSID (name)
-#define conf_password "9AwrIkwTIn5H5QzAxGY3HhKh"  // your network password
+//#define conf_SSID "TIM-29836971"                  //  your network SSID (name)
+//#define conf_password "9AwrIkwTIn5H5QzAxGY3HhKh"  // your network password
 //PRATO
-//#define conf_SSID "TIM-90267905"                  //  your network SSID (name)
-//#define conf_password "ufSzgF1bBGDlMWhhhG7OYrTC"  // your network password
+#define conf_SSID "TIM-90267905"                  //  your network SSID (name)
+#define conf_password "ufSzgF1bBGDlMWhhhG7OYrTC"  // your network password
 
 IPAddress conf_ip(192, 168, 1, 222); // desired IP Address
 IPAddress conf_dns(192, 168, 1, 1); //set dns to match your network
@@ -36,17 +36,12 @@ IPAddress conf_subnet(255, 255, 255, 0); // set subnet mask to match your networ
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //SENSOR
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define IN_DHT D0
-
-// Uncomment the type of sensor in use:
-//#define DHTTYPE           DHT11     // DHT 11 
-#define DHTTYPE           DHT22     // DHT 22 (AM2302)
-//#define DHTTYPE           DHT21     // DHT 21 (AM2301)
+#define IN_DHT D6
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //THERMOSTAT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define OUT_RELAY 2
+#define OUT_RELAY D3
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //ENCODER
@@ -58,11 +53,11 @@ IPAddress conf_subnet(255, 255, 255, 0); // set subnet mask to match your networ
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define TFT_SCLK 14
-#define TFT_DATA 13
-#define TFT_CD 0
-#define TFT_CS 4
-#define TFT_LED 5
+#define TFT_SCLK D5
+#define TFT_DATA D7
+#define TFT_CD D4
+#define TFT_CS D8
+#define TFT_LED D0
 //#define TFT_RESET D11
 
 

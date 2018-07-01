@@ -12,14 +12,14 @@
 Connections Conn(conf_SSID,conf_password,conf_ip,conf_dns,conf_subnet,conf_gateway);
 
 //////////////////////////////////////
-//SENSOR
+// TEMPERATURE SENSOR
 //////////////////////////////////////
-#include "DHT.h"
+#include "DHTesp.h"
 
-float room_temperature;
-float room_humidity;
+float room_temperature=0;
+float room_humidity=0;
 
-DHT dht(IN_DHT, DHTTYPE);
+DHTesp dht;
 
 //////////////////////////////////////
 //THERMOSTAT
@@ -35,8 +35,6 @@ float temperature_setpoint;
 //////////////////////////////////////
 #include "Display.h"
 
-//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_CD);
-
 Display disp = Display(TFT_LED, TFT_CS, TFT_CD);
 
 uint16_t colors[24] = {
@@ -48,29 +46,34 @@ uint16_t colors[24] = {
     ILI9341_RED, ILI9341_RED, ILI9341_GREEN, ILI9341_GREEN // 20 21 22 23
     };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CODE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setup(){
   Serial.begin(9600);
   InitConnection();
+  delay(1000);
+  
+  dht.setup(IN_DHT, DHTesp::DHT22);
   disp.begin();
-  dht.begin();
+  
 }
 
 void loop() {
   Serial.println("[UPDATE] Reading sensors");
-//  T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
+  readSensor();
+  T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
   
   delay(1000);
 
   Serial.println("[UPDATE] Display HomeScreen");
   disp.clearScreen();
   disp.showSplashScreen(VERSION);
-  delay(2500);
-  //disp.clearScreen();
-  //disp.showMainScreen(23.4 , 55.5, Conn.connectionStatus(), Conn.myIP().toString(), colors);
-  //delay(2500);
+  delay(3000);
+  disp.clearScreen();
+  disp.showMainScreen(24.4 , 33.6, Conn.connectionStatus(), Conn.myIP().toString(), colors);
+  delay(10000);
 }
 
 void InitConnection(){
@@ -99,14 +102,19 @@ void InitConnection(){
 }
 
 void readSensor(){
-   // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  room_humidity = dht.readHumidity();
-  // Read temperature as Celsius (the default)
-  room_temperature = dht.readTemperature();
-  // Read temperature as Fahrenheit (isFahrenheit = true)
-  float f = dht.readTemperature(true);
-
+  delay(dht.getMinimumSamplingPeriod());
+  room_humidity = dht.getHumidity();
+  int temp = room_humidity *10;
+  room_humidity = temp/10;
+  
+  room_temperature = dht.getTemperature();
+  temp = room_temperature *10;
+  room_temperature = temp/10;
+  
+  Serial.print("[UPDATE] Room temperature: ");
+  Serial.println(room_temperature);
+  Serial.print("[UPDATE] Room humidity: ");
+  Serial.println(room_humidity);
 }
 
 
