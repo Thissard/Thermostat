@@ -9,7 +9,7 @@
 
 // Task
 Task SensorTask(1000, TASK_FOREVER,&SensorTaskCallback);
-Task DisplayTask(1000, TASK_FOREVER,&DisplayTaskCallback);
+Task DisplayTask(400, TASK_FOREVER,&DisplayTaskCallback);
 Task ThermostatTask(1000, TASK_FOREVER,&ThermostatTaskCallback);
 Task UserCommandsTask(1000, TASK_FOREVER,&UserCommandsTaskCallback);
 Task SerialDiagnosticTask(5000, TASK_FOREVER,&SerialDiagnosticCallback);
@@ -42,7 +42,7 @@ DHT_Unified dht(IN_DHT, DHTTYPE);
 
 Thermostat T(OUT_RELAY);
 
-float temperature_setpoint;
+float temperature_setpoint=0;
 
 //////////////////////////////////////
 //DISPLAY
@@ -76,11 +76,16 @@ void setup(){
   
   disp.begin();
 
+
+
   InitScheduler();
 }
 
 void loop() {
   runner.execute();
+
+
+  
 }
 
 void InitScheduler(){
@@ -135,35 +140,45 @@ void InitConnection(){
 void SensorTaskCallback(){
   sensors_event_t event;
   dht.temperature().getEvent(&event);
-  dht.humidity().getEvent(&event);
   
   if (isnan(event.temperature)) {
-    //Serial.println("Error reading temperature!");
+    Serial.println("Error reading temperature!");
   }
   else {
     room_temperature = event.temperature;
-    int temp = room_temperature *10;
-    room_temperature = temp/10;
+    //int temp = room_temperature *10;
+    //room_temperature = temp/10;
   }
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
-    //Serial.println("Error reading humidity!");
+    Serial.println("Error reading humidity!");
   }
   else {
     room_humidity = event.relative_humidity;
-    int temp = room_humidity *10;
-    room_humidity = temp/10;
+    //int temp = room_humidity *10;
+    //room_humidity = temp/10;
   }
 }
 
 void DisplayTaskCallback(){
-  Serial.println("[UPDATE] Display HomeScreen");
-  disp.clearScreen();
-  disp.showSplashScreen(VERSION);
+  switch (MACHINE_STATE){
+    case 0: //SPLASH SCREEN SHOW
+      Serial.println("[UPDATE] Display HomeScreen");
+      disp.clearScreen();
+      disp.showSplashScreen(VERSION);
+      delay(2000);
+      MACHINE_STATE=10;
+      break;
+    case 10:
+      disp.clearScreen();
+      disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), colors);
+      break;
+    case 20:
+    break;
+  }
   
   delay(3000);
-  disp.clearScreen();
-  disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), colors);
+  
   delay(10000);
   yield();
 }
@@ -185,42 +200,3 @@ void SerialDiagnosticCallback(){
   Serial.print("Room humidity: ");
   Serial.println(room_humidity);
 }
-
-
-
-
-/*
-unsigned long TFT_Draw_left_circle(void){
-  unsigned long start = micros();
-    tft.fillCircle(80,120,78, ILI9341_GREEN);
-    tft.fillCircle(80,120,68, ILI9341_BLACK);
-  return micros()- start;
-}
-
-unsigned long TFT_Draw_right_circle(void){
-  unsigned long start = micros();
-    tft.fillCircle(240,120,58, ILI9341_WHITE);
-    tft.fillCircle(240,120,48, ILI9341_BLACK);
-  return micros()- start;
-}
-
-
-
-
-
-unsigned long TFT_writeTemp_text(void){
-  unsigned long start = micros();
-    tft.setFont(&Gameplay20pt7b);
-    tft.setCursor(5,120);
-    tft.setTextColor(ILI9341_WHITE);
-    tft.setTextSize(2);
-    tft.print("24");
-    tft.setCursor(125,120);
-    tft.setTextSize(1);
-    tft.print("2");
-    tft.setFont();
-  return micros()- start;
-}
-
-
-*/
