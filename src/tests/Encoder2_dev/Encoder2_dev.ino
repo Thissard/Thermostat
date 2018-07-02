@@ -1,8 +1,8 @@
 #include "UserCommands.h"
 
 #define IN_ENC_A D1
-#define IN_ENC_B D2
-#define IN_ENC_BUTTON D5
+#define IN_ENC_B D3
+#define IN_ENC_BUTTON D6
 
 UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON);
 

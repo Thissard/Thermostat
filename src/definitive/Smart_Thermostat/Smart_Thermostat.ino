@@ -8,11 +8,11 @@
 #include <TaskSchedulerDeclarations.h>
 
 // Task
-Task SensorTask(1000, TASK_FOREVER,&SensorTaskCallback);
-Task DisplayTask(400, TASK_FOREVER,&DisplayTaskCallback);
-Task ThermostatTask(1000, TASK_FOREVER,&ThermostatTaskCallback);
-Task UserCommandsTask(1000, TASK_FOREVER,&UserCommandsTaskCallback);
-Task SerialDiagnosticTask(5000, TASK_FOREVER,&SerialDiagnosticCallback);
+Task SensorTask(1500, TASK_FOREVER,&SensorTaskCallback);
+Task DisplayTask(1000, TASK_FOREVER,&DisplayTaskCallback);
+Task ThermostatTask(3000, TASK_FOREVER,&ThermostatTaskCallback);
+Task UserCommandsTask(5,TASK_FOREVER,&UserCommandsTaskCallback);
+Task SerialDiagnosticTask(10000, TASK_FOREVER,&SerialDiagnosticCallback);
 
 Scheduler runner;
 
@@ -61,6 +61,14 @@ uint16_t colors[24] = {
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// USER COMMANDS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "UserCommands.h"
+
+UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CODE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -68,24 +76,22 @@ void setup(){
   Serial.begin(9600);
   InitConnection();
   delay(1000);
-  dht.begin();
 
+  encoder.begin();
+  
+  dht.begin();
   sensor_t sensor;
   dht.temperature().getSensor(&sensor);
   dht.humidity().getSensor(&sensor);
   
   disp.begin();
-
-
-
+  
   InitScheduler();
 }
 
 void loop() {
+  encoder.update();
   runner.execute();
-
-
-  
 }
 
 void InitScheduler(){
@@ -108,6 +114,8 @@ void InitScheduler(){
   Serial.println("DisplayTask enabled");
   ThermostatTask.enable();
   Serial.println("ThermostatTask enabled");
+  UserCommandsTask.enable();
+  Serial.println("UserCommandsTask enabled");
   SerialDiagnosticTask.enable();
   Serial.println("SerialDiagnosticTask enabled");
   }
@@ -146,8 +154,6 @@ void SensorTaskCallback(){
   }
   else {
     room_temperature = event.temperature;
-    //int temp = room_temperature *10;
-    //room_temperature = temp/10;
   }
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
@@ -155,8 +161,6 @@ void SensorTaskCallback(){
   }
   else {
     room_humidity = event.relative_humidity;
-    //int temp = room_humidity *10;
-    //room_humidity = temp/10;
   }
 }
 
@@ -167,36 +171,56 @@ void DisplayTaskCallback(){
       disp.clearScreen();
       disp.showSplashScreen(VERSION);
       delay(2000);
+      disp.clearScreen();
       MACHINE_STATE=10;
       break;
     case 10:
-      disp.clearScreen();
       disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), colors);
       break;
     case 20:
     break;
   }
-  
-  delay(3000);
-  
-  delay(10000);
   yield();
 }
 
 void ThermostatTaskCallback(){
   T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
+
+  if (T.get_heater_state())
+    temperature_setpoint = room_temperature - 5;
+  else
+    temperature_setpoint = room_temperature + 5;
+  yield();  
 }
 
 void UserCommandsTaskCallback(){
   
+  
+  if (encoder.turnedLeft()){
+    Serial.println("LEFT COMMAND");
+  }
+  
+  if (encoder.turnedRight()){
+    Serial.println("RIGHT COMMAND");
+  }
+
+  if (encoder.buttonWasPressed()){
+    Serial.println("BUTTON PRESSED");
+  }
+  yield();
 }
 
 void SerialDiagnosticCallback(){
-  Serial.println("[UPDATE] Update Thermostat status");
-  Serial.println(T.get_heater_state() ? "ON" : "OFF");
+  
   Serial.println("[UPDATE] Reading sensors");
   Serial.print("Room temperature: ");
   Serial.println(room_temperature);
   Serial.print("Room humidity: ");
   Serial.println(room_humidity);
+  Serial.println("[UPDATE] Update Thermostat");
+  Serial.print("Temperature setpoint: ");
+  Serial.println(temperature_setpoint);
+  Serial.print(" Thermostat status: ");
+  Serial.println(T.get_heater_state() ? "ON" : "OFF");
+  yield();
 }
