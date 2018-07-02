@@ -4,6 +4,9 @@
 uint8_t prev_conn_status = -1;
 uint8_t prev_day = -1;
 uint8_t prev_min = -1;
+uint8_t prev_int_temp = -1;
+uint8_t prev_dec_temp = -1;
+float prev_humidity = -1;
 
 Display::Display(int8_t led, int8_t cs, int8_t dc, int8_t sdi_mosi, int8_t sck){
   this->_cs_pin = cs;
@@ -133,6 +136,7 @@ void Display::showMainScreen(float temperature, float humidity, uint8_t connecti
     tft->print(year());
     prev_day = day();
   }
+  
   //TIME
   if(prev_min != minute()){
     tft->setFont();
@@ -148,21 +152,30 @@ void Display::showMainScreen(float temperature, float humidity, uint8_t connecti
   //TEMPERATURE
   int int_temperature=temperature;
   int dec_temperature=(temperature*10)-(int_temperature*10);
-  tft->setFont(&Gameplay20pt7b);
-  tft->setCursor(5,125);
-  tft->setTextColor(ILI9341_WHITE);
-  tft->setTextSize(2);
-  tft->print(int_temperature);
-  tft->setCursor(125,125);
-  tft->setTextSize(1);
-  tft->print(dec_temperature);
-
+  if (prev_int_temp != int_temperature || prev_dec_temp != dec_temperature){
+    tft->fillRect(5, 50, 150, 80, ILI9341_BLACK);
+    tft->setFont(&Gameplay20pt7b);
+    tft->setCursor(5,125);
+    tft->setTextColor(ILI9341_WHITE);
+    tft->setTextSize(2);
+    tft->print(int_temperature);
+    tft->setCursor(125,125);
+    tft->setTextSize(1);
+    tft->print(dec_temperature);
+    prev_int_temp = int_temperature;
+    prev_dec_temp = dec_temperature;
+  }
+  
   //HUMIDITY
-  tft->drawBitmap(10, 137, Drop16p, 16, 16, ILI9341_WHITE);
-  tft->setCursor(30,150);
-  tft->setFont(&Classic8pt7b);
-  tft->setTextSize(1);
-  tft->printf("%2.1f",humidity);
-  tft->print("%");
+  if (prev_humidity != humidity){
+    tft->drawBitmap(10, 137, Drop16p, 16, 16, ILI9341_WHITE);
+    tft->fillRect(30, 135, 100, 25, ILI9341_BLACK);
+    tft->setCursor(30,150);
+    tft->setFont(&Classic8pt7b);
+    tft->setTextSize(1);
+    tft->printf("%2.1f",humidity);
+    tft->print("%");
+    prev_humidity = humidity;
+  }
 }
 
