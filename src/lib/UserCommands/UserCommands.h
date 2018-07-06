@@ -9,7 +9,7 @@
 
 class UserCommands{
   public:
-    UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin);  //COSTRUTTORE CLASSE
+    UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin, void (*ISR_callback)(void));  //COSTRUTTORE CLASSE
     
     void begin(void);  //DA USARE NEL SETUP 
     void update(void); //DA USARE NEL LOOP
@@ -21,6 +21,9 @@ class UserCommands{
     bool turnedLeft(void); 
     bool turnedRight(void);
     bool buttonWasPressed(void);
+
+    //METODO DA USARE DALLA FUNZIONE CALLBACK!
+    void buttonInterruptHandler(void);
   private:
     uint8_t _a;
     uint8_t _b;
@@ -36,6 +39,6 @@ class UserCommands{
     uint32_t _bDebounce; //debounce time
     ESPRotary *_rotary;
     void rotate(void);
-    
+    void (*ISR_callback)();
 };
 

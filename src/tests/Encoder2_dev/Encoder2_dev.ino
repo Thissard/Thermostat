@@ -3,8 +3,8 @@
 #define IN_ENC_A D1
 #define IN_ENC_B D3
 #define IN_ENC_BUTTON D6
-
-UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON);
+void buttonCallback();
+UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON, buttonCallback);
 
 // pin assignments
 
@@ -15,6 +15,7 @@ void setup() {
   Serial.begin(9600);
   delay(50);
   encoder.begin();
+
 }
 
 void loop() {
@@ -33,3 +34,8 @@ void loop() {
   }
 
 }
+
+void buttonCallback(){
+  encoder.buttonInterruptHandler();
+}
+
