@@ -47,7 +47,7 @@ IPAddress conf_subnet(255, 255, 255, 0); // set subnet mask to match your networ
 //ENCODER
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define IN_ENC_BUTTON RX
+#define IN_ENC_BUTTON D6
 #define IN_ENC_A D1
 #define IN_ENC_B D3
 

@@ -1,7 +1,7 @@
 #include "UserCommands.h"
 
 int prev_time = 0;
-UserCommands::UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin){
+UserCommands::UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin, void (*ISR_callback)(void)){
   _a = a_pin;
   _b = b_pin;
   _push = pushbutton_pin;
@@ -14,6 +14,7 @@ UserCommands::UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin)
   _bDebounce = 25;
 
   pinMode(_push, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(_push), ISR_callback , FALLING );
 }
 
 void UserCommands::begin(void){
@@ -24,7 +25,7 @@ void UserCommands::begin(void){
 void UserCommands::update(void){
   //TIMEOUT WHEN USER DONT DO ANY ACTION
   if (millis() - prev_time > 2000){ //timout occour after 2s
-    //Serial.println("User Commands Timeout Occoured: Reset");
+    Serial.println("User Commands Timeout Occoured: Reset");
     _rotary->resetPosition();
     _turnedRight = false;
     _turnedLeft = false;
@@ -48,19 +49,6 @@ void UserCommands::update(void){
     _turnedRight = false;
     prev_time=millis();
   }
-
-  //BUTTON PRESSED
-  _buttonState = !digitalRead(_push);
-  if (millis() - _bLastChange < _bDebounce){
-    _bChanged = false;
-  }
-  else{
-    _bChanged = (_buttonState != _buttonLastState);
-    if (_bChanged)_bLastChange = millis();
-    if (_bChanged && !_buttonState) _buttonPressed = true;
-    _buttonLastState = _buttonState;
-  }
-  
 }
 
 bool UserCommands::turnedLeft(void){
@@ -84,4 +72,9 @@ bool UserCommands::buttonWasPressed(void){
   return old_status;
 }
 
+void UserCommands::buttonInterruptHandler(void){
+    //BUTTON PRESSED!
+  _buttonPressed = true;
+  prev_time=millis();
+}
 

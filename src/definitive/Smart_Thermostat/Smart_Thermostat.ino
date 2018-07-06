@@ -65,12 +65,23 @@ uint16_t colors[24] = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "UserCommands.h"
-
-UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON);
+void buttonCallback();
+UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON, buttonCallback);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CODE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+long old_ms_display = 0;
+long old_ms_encoder = 0;
+long old_ms_dht = 0;
+long old_ms_thermostat = 0;
+long old_ms_full_cycle = 0;
+
+long ms_display = 0;
+long ms_encoder = 0;
+long ms_dht = 0;
+long ms_thermostat = 0;
+long ms_full_cycle = 0;
 
 void setup(){
   Serial.begin(9600);
@@ -92,6 +103,7 @@ void setup(){
 void loop() {
   encoder.update();
   runner.execute();
+
 }
 
 void InitScheduler(){
@@ -108,16 +120,16 @@ void InitScheduler(){
   runner.addTask(SerialDiagnosticTask);
   Serial.println("SerialDiagnosticTask scheduled");
   
-  SensorTask.enable();
-  Serial.println("SensorTask enabled");
-  DisplayTask.enable();
-  Serial.println("DisplayTask enabled");
-  ThermostatTask.enable();
-  Serial.println("ThermostatTask enabled");
+  //SensorTask.enable();
+  //Serial.println("SensorTask enabled");
+  //DisplayTask.enable();
+  //Serial.println("DisplayTask enabled");
+  //ThermostatTask.enable();
+  //Serial.println("ThermostatTask enabled");
   UserCommandsTask.enable();
   Serial.println("UserCommandsTask enabled");
-  SerialDiagnosticTask.enable();
-  Serial.println("SerialDiagnosticTask enabled");
+  //SerialDiagnosticTask.enable();
+  //Serial.println("SerialDiagnosticTask enabled");
   }
 
 void InitConnection(){
@@ -144,7 +156,6 @@ void InitConnection(){
   Serial.println("");
 }
 
-
 void SensorTaskCallback(){
   sensors_event_t event;
   dht.temperature().getEvent(&event);
@@ -162,6 +173,7 @@ void SensorTaskCallback(){
   else {
     room_humidity = event.relative_humidity;
   }
+
 }
 
 void DisplayTaskCallback(){
@@ -180,21 +192,21 @@ void DisplayTaskCallback(){
     case 20:
     break;
   }
-  yield();
+yield();
 }
 
 void ThermostatTaskCallback(){
+
   T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
 
   if (T.get_heater_state())
     temperature_setpoint = room_temperature - 5;
   else
     temperature_setpoint = room_temperature + 5;
-  yield();  
+
 }
 
 void UserCommandsTaskCallback(){
-  
   
   if (encoder.turnedLeft()){
     Serial.println("LEFT COMMAND");
@@ -207,7 +219,6 @@ void UserCommandsTaskCallback(){
   if (encoder.buttonWasPressed()){
     Serial.println("BUTTON PRESSED");
   }
-  yield();
 }
 
 void SerialDiagnosticCallback(){
@@ -223,4 +234,9 @@ void SerialDiagnosticCallback(){
   Serial.print(" Thermostat status: ");
   Serial.println(T.get_heater_state() ? "ON" : "OFF");
   yield();
+}
+
+void buttonCallback(){
+  Serial.println("BUTTON PRESSED");
+  encoder.buttonInterruptHandler();
 }
