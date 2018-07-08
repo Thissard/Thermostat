@@ -67,30 +67,6 @@ void Display::showMainScreen(float temperature, float humidity, uint8_t connecti
       tft->println("DISCONNESSO");
     prev_conn_status = connection;
   }
-
-  //chrono Blu
-  tft->fillRect(226,59,11,11,ILI9341_BLUE);
-  tft->setFont();
-  tft->setTextSize(1);
-  
-   tft->setCursor(240,62);
-   tft->print("Eco      ");
-   tft->print("18.0");
-
-tft->fillRect(226,73,11,11,ILI9341_GREEN);
-   tft->setCursor(240,76);
-   tft->print("Normal   ");
-   tft->print("21.0");
-
-tft->fillRect(226,87,11,11,ILI9341_ORANGE);
-   tft->setCursor(240,90);
-   tft->print("Comfort  ");
-   tft->print("23.0");
-
-tft->fillRect(226,101,11,11,ILI9341_RED);
-   tft->setCursor(240,104);
-   tft->print("Comfort+ ");
-   tft->print("25.0");
   
   //Draw Chrono
   word start_x = 6;
@@ -160,6 +136,7 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     tft->print(year());
     prev_day = day();
   }
+  
   //TIME
   if(prev_min != minute()){
     tft->setFont();
@@ -171,6 +148,7 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     tft->printf("%02d",minute());
     prev_min = minute();
   }
+
   //TEMPERATURE
   int int_temperature=temperature;
   int dec_temperature=(temperature*10)-(int_temperature*10);
@@ -187,9 +165,10 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     prev_int_temp = int_temperature;
     prev_dec_temp = dec_temperature;
   }
+  
   //HUMIDITY
   if (prev_humidity != humidity){
-    tft->drawBitmap(10, 143, Drop16p, 16, 16, ILI9341_WHITE);
+    tft->drawBitmap(10, 137, Drop16p, 16, 16, ILI9341_WHITE);
     tft->fillRect(30, 135, 100, 25, ILI9341_BLACK);
     tft->setCursor(30,150);
     tft->setFont(&Classic8pt7b);
