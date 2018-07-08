@@ -11,7 +11,7 @@
 Task SensorTask(1500, TASK_FOREVER,&SensorTaskCallback);
 Task DisplayTask(1000, TASK_FOREVER,&DisplayTaskCallback);
 Task ThermostatTask(3000, TASK_FOREVER,&ThermostatTaskCallback);
-Task UserCommandsTask(5,TASK_FOREVER,&UserCommandsTaskCallback);
+Task UserCommandsTask(0,TASK_FOREVER,&UserCommandsTaskCallback);
 Task SerialDiagnosticTask(10000, TASK_FOREVER,&SerialDiagnosticCallback);
 
 Scheduler runner;
@@ -66,7 +66,7 @@ uint16_t colors[24] = {
 
 #include "UserCommands.h"
 void buttonCallback();
-UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON, buttonCallback);
+UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CODE
@@ -88,22 +88,24 @@ void setup(){
   InitConnection();
   delay(1000);
 
+  disp.begin();
   encoder.begin();
-  
+  delay(200);
   dht.begin();
   sensor_t sensor;
   dht.temperature().getSensor(&sensor);
   dht.humidity().getSensor(&sensor);
   
-  disp.begin();
-  
   InitScheduler();
+
+  pinMode(IN_ENC_BUTTON, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(IN_ENC_BUTTON), ISR_callback , FALLING );
 }
 
 void loop() {
   encoder.update();
+  //UserCommandsTaskCallback();
   runner.execute();
-
 }
 
 void InitScheduler(){
@@ -120,16 +122,16 @@ void InitScheduler(){
   runner.addTask(SerialDiagnosticTask);
   Serial.println("SerialDiagnosticTask scheduled");
   
-  //SensorTask.enable();
-  //Serial.println("SensorTask enabled");
-  //DisplayTask.enable();
-  //Serial.println("DisplayTask enabled");
-  //ThermostatTask.enable();
-  //Serial.println("ThermostatTask enabled");
+  SensorTask.enable();
+  Serial.println("SensorTask enabled");
+  DisplayTask.enable();
+  Serial.println("DisplayTask enabled");
+  ThermostatTask.enable();
+  Serial.println("ThermostatTask enabled");
   UserCommandsTask.enable();
   Serial.println("UserCommandsTask enabled");
-  //SerialDiagnosticTask.enable();
-  //Serial.println("SerialDiagnosticTask enabled");
+  SerialDiagnosticTask.enable();
+  Serial.println("SerialDiagnosticTask enabled");
   }
 
 void InitConnection(){
@@ -236,7 +238,10 @@ void SerialDiagnosticCallback(){
   yield();
 }
 
-void buttonCallback(){
-  Serial.println("BUTTON PRESSED");
+int button_debounce= 25;
+int ms_button = 0;
+void ISR_callback(){
+  if (millis() - ms_button > button_debounce)
   encoder.buttonInterruptHandler();
+  ms_button = millis();
 }

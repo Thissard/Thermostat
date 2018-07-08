@@ -1,7 +1,7 @@
 #include "UserCommands.h"
 
 int prev_time = 0;
-UserCommands::UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin, void (*ISR_callback)(void)){
+UserCommands::UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin){
   _a = a_pin;
   _b = b_pin;
   _push = pushbutton_pin;
@@ -12,9 +12,6 @@ UserCommands::UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin,
   _buttonPressed = false;
   _buttonState = false;
   _bDebounce = 25;
-
-  pinMode(_push, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(_push), ISR_callback , FALLING );
 }
 
 void UserCommands::begin(void){

@@ -9,7 +9,7 @@
 
 class UserCommands{
   public:
-    UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin, void (*ISR_callback)(void));  //COSTRUTTORE CLASSE
+    UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin);  //COSTRUTTORE CLASSE
     
     void begin(void);  //DA USARE NEL SETUP 
     void update(void); //DA USARE NEL LOOP

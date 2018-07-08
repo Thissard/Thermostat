@@ -1,6 +1,8 @@
 #include "UserCommands.h"
 
 int prev_time = 0;
+int prev_button_time=0;
+
 UserCommands::UserCommands(uint8_t a_pin, uint8_t b_pin, uint8_t pushbutton_pin, void (*ISR_callback)(void)){
   _a = a_pin;
   _b = b_pin;
@@ -74,7 +76,11 @@ bool UserCommands::buttonWasPressed(void){
 
 void UserCommands::buttonInterruptHandler(void){
     //BUTTON PRESSED!
-  _buttonPressed = true;
+  if (millis() - prev_button_time > _bDebounce and !_buttonPressed)
+    {
+      _buttonPressed = true;
+      prev_button_time=millis();
+    }
   prev_time=millis();
 }
 
