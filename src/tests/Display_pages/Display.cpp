@@ -7,6 +7,7 @@ uint8_t prev_min = -1;
 uint8_t prev_int_temp = -1;
 uint8_t prev_dec_temp = -1;
 float prev_humidity = -1;
+uint8_t prev_index = -1;
 
 Display::Display(int8_t led, int8_t cs, int8_t dc, int8_t sdi_mosi, int8_t sck){
   this->_cs_pin = cs;
@@ -32,6 +33,9 @@ void Display::clearScreen(void){
   prev_conn_status = -1;
   prev_day = -1;
   prev_min = -1;
+  prev_int_temp = -1;
+  prev_humidity = -1;
+  prev_index = -1;
   tft->fillScreen(ILI9341_BLACK);
 }
 
@@ -187,6 +191,7 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     prev_int_temp = int_temperature;
     prev_dec_temp = dec_temperature;
   }
+  
   //HUMIDITY
   if (prev_humidity != humidity){
     tft->drawBitmap(10, 143, Drop16p, 16, 16, ILI9341_WHITE);
@@ -198,5 +203,24 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     tft->print("%");
     prev_humidity = humidity;
   }
+}
+
+void Display::showMenuScreen(int selection){
+  tft->setFont();
+  tft->setTextSize(2);
+  //arrow based on index
+  if (prev_index != selection){
+    tft->fillRect(10, 50, 22, 100, ILI9341_BLACK);
+    tft->setCursor(10, 60+20*selection);
+    tft->print("->");
+    prev_index = selection;
+  }
+  tft->setCursor(30,60);
+  tft->print(" - PROGRAMMAZIONE");
+  tft->setCursor(30,80);
+  tft->print(" - LUMINOSITA'");
+  tft->setCursor(30,100);
+  tft->print(" - INDIETRO");
+  
 }
 

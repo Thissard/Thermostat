@@ -19,6 +19,7 @@ class Display{
     
     void showSplashScreen(String project_version);
     void showMainScreen(float temperature, float humidity, uint8_t connectionON, String IP, uint16_t colors[24]);
+    void showMenuScreen(int selection);
   private:
     int8_t _cs_pin;
     int8_t _dc_pin;

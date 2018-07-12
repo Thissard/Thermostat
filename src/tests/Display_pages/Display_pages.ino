@@ -9,7 +9,6 @@
 #define TFT_CS D8
 #define TFT_LED D0
 
-
 Display disp = Display(TFT_LED, TFT_CS, TFT_CD);
 
 uint16_t colors[24] = {
@@ -28,7 +27,8 @@ void setup() {
   delay(50);
   disp.begin();
 }
-
+int i = 0;
+int ms = 0;
 void loop(){
   int t = millis()/100;
   float te = t/10;
@@ -40,13 +40,28 @@ void loop(){
       delay(2000);
       disp.clearScreen();
       MACHINE_STATE=10;
+      ms = millis();
       break;
     case 10:
-      
       disp.showMainScreen(99.9 , te, 3, "127.0.0.1", colors);
+      if (millis() - ms > 10000){
+        MACHINE_STATE = 20;
+        disp.clearScreen();
+        ms= millis();
+      }
       break;
-    case 20:
-    
+    case 20: 
+      disp.showMenuScreen(i);
+
+      if (millis() - ms > 1500){
+        i++;
+        if (i>2){
+          i = 0;
+          disp.clearScreen();
+          MACHINE_STATE = 10;
+        }
+        ms = millis();
+      }
     break;
   }
 
