@@ -8,6 +8,7 @@ uint8_t prev_int_temp = -1;
 uint8_t prev_dec_temp = -1;
 float prev_humidity = -1;
 uint8_t prev_index = -1;
+uint8_t prev_brightness = -1;
 
 Display::Display(int8_t led, int8_t cs, int8_t dc, int8_t sdi_mosi, int8_t sck){
   this->_cs_pin = cs;
@@ -36,6 +37,7 @@ void Display::clearScreen(void){
   prev_int_temp = -1;
   prev_humidity = -1;
   prev_index = -1;
+  prev_brightness = -1;
   tft->fillScreen(ILI9341_BLACK);
 }
 
@@ -223,4 +225,18 @@ void Display::showMenuScreen(int selection){
   tft->print(" - INDIETRO");
   
 }
+
+void Display::showBrightness(int selection){
+  
+  if (prev_brightness != selection){
+    tft->setFont();
+    tft->setTextSize(4);
+    tft->setCursor(20,60);
+    tft->print("LUMINOSITA':");
+    tft->setCursor(120,120);
+    tft->print(selection);
+  }  
+  
+}
+
 

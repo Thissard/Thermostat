@@ -52,7 +52,6 @@ void loop(){
       break;
     case 20: 
       disp.showMenuScreen(i);
-
       if (millis() - ms > 1500){
         i++;
         if (i>2){
@@ -60,11 +59,20 @@ void loop(){
           disp.clearScreen();
           MACHINE_STATE = 10;
         }
+        if (i==1){
+        disp.clearScreen();
+        MACHINE_STATE = 30;
+        }
         ms = millis();
       }
     break;
+    case 30:
+      disp.showBrightness(30);
+      delay(3000);
+      disp.clearScreen();
+      MACHINE_STATE = 20;
+    break;
   }
-
 }
 
 
