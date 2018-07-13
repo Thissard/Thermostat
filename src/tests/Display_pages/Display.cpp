@@ -233,8 +233,9 @@ void Display::showBrightness(int selection){
     tft->setTextSize(4);
     tft->setCursor(20,60);
     tft->print("LUMINOSITA':");
-    tft->setCursor(120,120);
+    tft->setCursor(110,120);
     tft->print(selection);
+    tft->print("%");
   }  
   
 }
