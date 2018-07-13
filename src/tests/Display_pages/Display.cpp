@@ -28,6 +28,8 @@ void Display::begin(void){
   clearScreen();
   tft->setCursor(0, 0);
   tft->setRotation(3);
+
+  pinMode(_led_pin, OUTPUT);
 }
 
 void Display::clearScreen(void){
@@ -39,6 +41,10 @@ void Display::clearScreen(void){
   prev_index = -1;
   prev_brightness = -1;
   tft->fillScreen(ILI9341_BLACK);
+}
+
+void Display::setBacklight(int backlight){
+  analogWrite(_led_pin, backlight/100*255);
 }
 
 void Display::showSplashScreen(String project_version){
@@ -233,6 +239,7 @@ void Display::showBrightness(int selection){
     tft->setTextSize(4);
     tft->setCursor(20,60);
     tft->print("LUMINOSITA':");
+    tft->fillRect(100, 110, 110, 50, ILI9341_BLACK);
     tft->setCursor(110,120);
     tft->print(selection);
     tft->print("%");

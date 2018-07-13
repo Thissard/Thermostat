@@ -29,6 +29,8 @@ void setup() {
 }
 int i = 0;
 int ms = 0;
+int bright = 0;
+int fadeAmount = 20;
 void loop(){
   int t = millis()/100;
   float te = t/10;
@@ -63,16 +65,28 @@ void loop(){
           disp.clearScreen();
           MACHINE_STATE = 10;
         }
-        
-        ms = millis();
+       ms = millis(); 
       }
     break;
     case 30:
-      disp.showBrightness(100);
-      delay(3000);
-      disp.clearScreen();
-      ms= millis();
-      MACHINE_STATE = 20;
+      
+      if (bright <=0)
+        fadeAmount = 20;
+      if (bright >=100)
+        fadeAmount = -20;
+        
+      bright = bright + fadeAmount;
+      
+      
+      
+      disp.showBrightness(bright);
+      delay (500);
+      
+      if (millis() - ms > 4000){
+        disp.clearScreen();
+        ms= millis();
+        MACHINE_STATE = 20;
+      }
     break;
   }
 }

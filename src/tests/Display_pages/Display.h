@@ -13,7 +13,7 @@ class Display{
     void standby(void);
     void wake_up(void);
     
-    void setBacklight(float backlight);
+    void setBacklight(int backlight);
     
     void begin(void);
     
