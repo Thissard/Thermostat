@@ -243,6 +243,9 @@ void Display::showBrightness(int selection){
     tft->setCursor(110,120);
     tft->print(selection);
     tft->print("%");
+    //int i=0;
+    for (int i = 0; i<10; i++)
+      tft->fillRect(32*i,200,32,32,tft->color565(25*i,25*i,25*i));
   }  
   
 }
