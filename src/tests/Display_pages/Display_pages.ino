@@ -7,7 +7,7 @@
 #define TFT_DATA D7
 #define TFT_CD D4
 #define TFT_CS D8
-#define TFT_LED D0
+#define TFT_LED RX
 
 Display disp = Display(TFT_LED, TFT_CS, TFT_CD);
 
@@ -26,11 +26,16 @@ void setup() {
   Serial.begin(9600);
   delay(50);
   disp.begin();
+
+  pinMode(TFT_LED, OUTPUT);
+  analogWrite(TFT_LED, 1024);
 }
+
 int i = 0;
 int ms = 0;
 int bright = 0;
 int fadeAmount = 20;
+
 void loop(){
   int t = millis()/100;
   float te = t/10;
@@ -69,7 +74,7 @@ void loop(){
       }
     break;
     case 30:
-      
+      delay (500);
       if (bright <=0)
         fadeAmount = 20;
       if (bright >=100)
@@ -77,10 +82,10 @@ void loop(){
         
       bright = bright + fadeAmount;
       
-      
-      
       disp.showBrightness(bright);
-      delay (500);
+      //disp.setBacklight(bright);
+      analogWrite(TFT_LED,bright*1024/100);
+      
       
       if (millis() - ms > 4000){
         disp.clearScreen();
