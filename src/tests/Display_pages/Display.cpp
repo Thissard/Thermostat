@@ -30,6 +30,8 @@ void Display::begin(void){
   tft->setRotation(3);
 
   pinMode(_led_pin, OUTPUT);
+  analogWrite(_led_pin, 1024);
+  setBacklight(100);
 }
 
 void Display::clearScreen(void){
@@ -44,7 +46,7 @@ void Display::clearScreen(void){
 }
 
 void Display::setBacklight(int backlight){
-  analogWrite(_led_pin, backlight/100*255);
+  analogWrite(_led_pin, backlight/100.0*1024);
 }
 
 void Display::showSplashScreen(String project_version){
