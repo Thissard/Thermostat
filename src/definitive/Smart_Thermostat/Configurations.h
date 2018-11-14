@@ -8,8 +8,14 @@ enum SCREENS{
   SPLASH_SCREEN,
   MAIN_SCREEN,
   MENU_SCREEN,
-  LUMINOSITY_SCREEN,
+  BRIGHTNESS_SCREEN,
   CHRONO_SCREEN
+};
+
+enum MENU_INDEX{
+  PROGRAMS,
+  BRIGHTNESS,
+  BACK  //LEAVE 'BACK' AS LAST
 };
 
 void SensorTaskCallback();
@@ -19,7 +25,8 @@ void UserCommandsTaskCallback();
 void SerialDiagnosticCallback();
 
 int MACHINE_STATE = SPLASH_SCREEN;
-
+int INDEX = PROGRAMS;
+int BRIGHT=100; //%
 //////////////////////////////////////
 //WIFI
 //////////////////////////////////////

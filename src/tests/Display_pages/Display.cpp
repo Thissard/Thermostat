@@ -46,7 +46,7 @@ void Display::clearScreen(void){
 }
 
 void Display::setBacklight(int backlight){
-  analogWrite(_led_pin, backlight/100.0*1024);
+  analogWrite(_led_pin, backlight*1024/100);
 }
 
 void Display::showSplashScreen(String project_version){

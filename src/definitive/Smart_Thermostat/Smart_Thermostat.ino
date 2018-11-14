@@ -192,9 +192,11 @@ void DisplayTaskCallback(){
       disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), colors);
       break;
     case MENU_SCREEN:
-      disp.showMenuScreen(0);
+      disp.showMenuScreen(INDEX);
       break;
-    case LUMINOSITY_SCREEN:
+    case BRIGHTNESS_SCREEN:
+      disp.showBrightness(BRIGHT);
+      disp.setBacklight(BRIGHT);
       break;
     case CHRONO_SCREEN:
       break;
@@ -216,12 +218,32 @@ void UserCommandsTaskCallback(){
   
   if (encoder.turnedLeft()){
     Serial.println("LEFT COMMAND");
+    switch (MACHINE_STATE){
+      case MENU_SCREEN:
+        if (INDEX > 0)INDEX--;
+       break;
+      case BRIGHTNESS_SCREEN:
+        if (BRIGHT > 10) BRIGHT = BRIGHT - 10;
+       break;
+    }
   }
   
   if (encoder.turnedRight()){
     Serial.println("RIGHT COMMAND");
+    switch (MACHINE_STATE){
+      case MENU_SCREEN:
+        if (INDEX < BACK) INDEX++;
+       break;
+      case BRIGHTNESS_SCREEN:
+        if (BRIGHT < 100) BRIGHT = BRIGHT + 10;
+       break;
+    }
   }
-
+  /*
+   ****************
+   * NAVIGATION
+   ****************
+   */
   if (encoder.buttonWasPressed()){
     Serial.println("BUTTON PRESSED");
     switch (MACHINE_STATE){
@@ -230,7 +252,24 @@ void UserCommandsTaskCallback(){
         MACHINE_STATE = MENU_SCREEN;
         break;
       case MENU_SCREEN:
+        disp.clearScreen();
+        switch (INDEX){
+          case PROGRAMS:
+          break;
+          case BRIGHTNESS:
+            disp.clearScreen();
+            MACHINE_STATE = BRIGHTNESS_SCREEN;
+          break;
+          case BACK:
+            disp.clearScreen();
+            MACHINE_STATE = MAIN_SCREEN;
+          break;
+        }
         break;
+      case BRIGHTNESS_SCREEN:
+        disp.clearScreen();
+        MACHINE_STATE = MENU_SCREEN;
+        break;  
     }
   }
 }
