@@ -7,6 +7,8 @@ uint8_t prev_min = -1;
 uint8_t prev_int_temp = -1;
 uint8_t prev_dec_temp = -1;
 float prev_humidity = -1;
+uint8_t prev_index = -1;
+uint8_t prev_brightness = -1;
 
 Display::Display(int8_t led, int8_t cs, int8_t dc, int8_t sdi_mosi, int8_t sck){
   this->_cs_pin = cs;
@@ -26,13 +28,25 @@ void Display::begin(void){
   clearScreen();
   tft->setCursor(0, 0);
   tft->setRotation(3);
+
+  pinMode(_led_pin, OUTPUT);
+  analogWrite(_led_pin, 1024);
+  setBacklight(100);
 }
 
 void Display::clearScreen(void){
   prev_conn_status = -1;
   prev_day = -1;
   prev_min = -1;
+  prev_int_temp = -1;
+  prev_humidity = -1;
+  prev_index = -1;
+  prev_brightness = -1;
   tft->fillScreen(ILI9341_BLACK);
+}
+
+void Display::setBacklight(int backlight){
+  analogWrite(_led_pin, backlight/100.0*1024);
 }
 
 void Display::showSplashScreen(String project_version){
@@ -187,6 +201,7 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     prev_int_temp = int_temperature;
     prev_dec_temp = dec_temperature;
   }
+  
   //HUMIDITY
   if (prev_humidity != humidity){
     tft->drawBitmap(10, 143, Drop16p, 16, 16, ILI9341_WHITE);
@@ -199,4 +214,42 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     prev_humidity = humidity;
   }
 }
+
+void Display::showMenuScreen(int selection){
+  tft->setFont();
+  tft->setTextSize(2);
+  //arrow based on index
+  if (prev_index != selection){
+    tft->fillRect(10, 50, 22, 100, ILI9341_BLACK);
+    tft->setCursor(10, 60+20*selection);
+    tft->print("->");
+    prev_index = selection;
+  }
+  tft->setCursor(30,60);
+  tft->print(" - PROGRAMMAZIONE");
+  tft->setCursor(30,80);
+  tft->print(" - LUMINOSITA'");
+  tft->setCursor(30,100);
+  tft->print(" - INDIETRO");
+  
+}
+
+void Display::showBrightness(int selection){
+  
+  if (prev_brightness != selection){
+    tft->setFont();
+    tft->setTextSize(4);
+    tft->setCursor(20,60);
+    tft->print("LUMINOSITA':");
+    tft->fillRect(100, 110, 110, 50, ILI9341_BLACK);
+    tft->setCursor(110,120);
+    tft->print(selection);
+    tft->print("%");
+    //int i=0;
+    for (int i = 0; i<10; i++)
+      tft->fillRect(32*i,200,32,32,tft->color565(25*i,25*i,25*i));
+  }  
+  
+}
+
 

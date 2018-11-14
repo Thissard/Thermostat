@@ -180,21 +180,25 @@ void SensorTaskCallback(){
 
 void DisplayTaskCallback(){
   switch (MACHINE_STATE){
-    case 0: //SPLASH SCREEN SHOW
+    case SPLASH_SCREEN: //SPLASH SCREEN SHOW
       Serial.println("[UPDATE] Display HomeScreen");
       disp.clearScreen();
       disp.showSplashScreen(VERSION);
       delay(2000);
       disp.clearScreen();
-      MACHINE_STATE=10;
+      MACHINE_STATE=MAIN_SCREEN;
       break;
-    case 10:
+    case MAIN_SCREEN:
       disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), colors);
       break;
-    case 20:
-    break;
+    case MENU_SCREEN:
+      disp.showMenuScreen(0);
+      break;
+    case LUMINOSITY_SCREEN:
+      break;
+    case CHRONO_SCREEN:
+      break;
   }
-yield();
 }
 
 void ThermostatTaskCallback(){
@@ -220,6 +224,14 @@ void UserCommandsTaskCallback(){
 
   if (encoder.buttonWasPressed()){
     Serial.println("BUTTON PRESSED");
+    switch (MACHINE_STATE){
+      case MAIN_SCREEN:
+        disp.clearScreen();
+        MACHINE_STATE = MENU_SCREEN;
+        break;
+      case MENU_SCREEN:
+        break;
+    }
   }
 }
 
@@ -238,10 +250,10 @@ void SerialDiagnosticCallback(){
   yield();
 }
 
-int button_debounce= 25;
+int button_debounce= 50;
 int ms_button = 0;
 void ISR_callback(){
   if (millis() - ms_button > button_debounce)
-  encoder.buttonInterruptHandler();
+    encoder.buttonInterruptHandler();
   ms_button = millis();
 }
