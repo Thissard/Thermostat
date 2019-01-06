@@ -1,0 +1,171 @@
+Cmp-Mod V01 Created by PcbNew   date = 26/12/2018 10:45:24
+
+BeginCmp
+TimeStamp = 5C163597
+Path = /5BF1E767
+Reference = J2;
+ValeurCmp = Screw_Terminal_01x03;
+IdModule  = Connectors:PINHEAD1-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C20D8BF
+Path = /5BF1ACD0
+Reference = U2;
+ValeurCmp = ILI9341_LCD_Breakout;
+IdModule  = ILI9431:ILI9431 2,8 TFT;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C211270
+Path = 
+Reference = hole_tft_4;
+ValeurCmp = MountingHole_3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C211267
+Path = 
+Reference = hole_tft_3;
+ValeurCmp = MountingHole_3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C21125F
+Path = 
+Reference = hole_tft_2;
+ValeurCmp = MountingHole_3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C210E8F
+Path = 
+Reference = hole_504_1;
+ValeurCmp = MountingHole_3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C210E87
+Path = 
+Reference = hole504_1;
+ValeurCmp = MountingHole_3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C163571
+Path = /5BF1A314
+Reference = C1;
+ValeurCmp = C;
+IdModule  = SMD_Packages:SMD-2010_Pol;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C163577
+Path = /5BF1F4CF
+Reference = C2;
+ValeurCmp = CP1;
+IdModule  = SMD_Packages:SMD-2010_Pol;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C16357D
+Path = /5BF1B09E
+Reference = D1;
+ValeurCmp = D_Schottky;
+IdModule  = Diodes_SMD:D_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C163583
+Path = /5BF1A2E9
+Reference = D2;
+ValeurCmp = D;
+IdModule  = Diodes_SMD:D_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C163589
+Path = /5BF1F46A
+Reference = D3;
+ValeurCmp = D;
+IdModule  = Diodes_SMD:D_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C163590
+Path = /5BF1E701
+Reference = J1;
+ValeurCmp = Screw_Terminal_01x03;
+IdModule  = Connectors:PINHEAD1-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C16359D
+Path = /5BF1FD73
+Reference = J3;
+ValeurCmp = Screw_Terminal_01x02;
+IdModule  = Connectors:PINHEAD1-2;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C1635A9
+Path = /5BF1A2C0
+Reference = K1;
+ValeurCmp = RSM822;
+IdModule  = Relays_THT:Relay_DPDT_Finder_40.52;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C1635B2
+Path = /5BF1A16C
+Reference = SW1;
+ValeurCmp = Rotary_Encoder_Switch;
+IdModule  = Buttons_Switches_THT:KSA_Tactile_SPST;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C1635BA
+Path = /5BF1A8F7
+Reference = TH1;
+ValeurCmp = DHT22_Temperature_Humidity;
+IdModule  = Sensors:DHT22_Temperature_Humidity;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C1635C0
+Path = /5BF1F319
+Reference = TH2;
+ValeurCmp = Thermistor;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C1635D4
+Path = /5BF1A110
+Reference = U1;
+ValeurCmp = WeMos_mini;
+IdModule  = wemos_d1_mini:D1_mini_board;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C16390D
+Path = 
+Reference = hole_503_1;
+ValeurCmp = MountingHole_3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5C211256
+Path = 
+Reference = hole_tft_1;
+ValeurCmp = MountingHole_3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+EndListe

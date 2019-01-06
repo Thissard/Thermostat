@@ -1,0 +1,118 @@
+
+(rules PCB Thermostat
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 203)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 3.3)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.4)
+    )
+  )
+  (rule
+    (width 400.0)
+    (clear 300.2)
+    (clear 200.0 (type smd_to_turn_gap))
+    (clear 500.2 (type default_"220-relay"))
+    (clear 75.0 (type smd_smd))
+    (clear 500.2 (type smd_"220-relay"))
+    (clear 500.2 (type "kicad_default"_"220-relay"))
+    (clear 500.2 (type "220-relay"_"220-relay"))
+    (clear 500.2 (type "220-relay"_pwr))
+  )
+  (padstack "Via[0-1]_600:400_um"
+    (shape
+      (circle F.Cu 600.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 600.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_600:400_um" "Via[0-1]_600:400_um" default
+  )
+  (via 
+    "Via[0-1]_600:400_um-kicad_default" "Via[0-1]_600:400_um" "kicad_default"
+  )
+  (via 
+    "Via[0-1]_600:400_um-220-relay" "Via[0-1]_600:400_um" "220-relay"
+  )
+  (via 
+    "Via[0-1]_600:400_um-pwr" "Via[0-1]_600:400_um" pwr
+  )
+  (via_rule
+    default "Via[0-1]_600:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_600:400_um-kicad_default"
+  )
+  (via_rule
+    "220-relay" "Via[0-1]_600:400_um-220-relay"
+  )
+  (via_rule
+    pwr "Via[0-1]_600:400_um-pwr"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 400.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    "Net-(C1-Pad1)" "DISP_LED" RELAY "Net-(D3-Pad2)" "ENC_A" "ENC_B" "ENC_BUT" "DHT_22"
+    "Net-(TH1-Pad3)" "Net-(U1-Pad8)" "DISP_DC" "DISP_CS" "DISP_MOSI" "DISP_SCK" "Net-(U1-Pad10)" "Net-(U1-Pad9)"
+    "Net-(U2-Pad9)" "Net-(U2-Pad10)" "Net-(U2-Pad11)" "Net-(U2-Pad12)" "Net-(U2-Pad13)" "Net-(RL1-Pad4)" "Net-(RL1-Pad2)" "Net-(RL1-Pad3)"
+    "Net-(D4-Pad2)"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 400.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "220-relay"
+    NO1 COM1 NC1 "Net-(J4-Pad2)" "Net-(J4-Pad1)"
+    (clearance_class "220-relay")
+    (via_rule 220-relay)
+    (rule
+      (width 1500.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class pwr
+    GND +5V +3V3 pwr
+    (clearance_class pwr)
+    (via_rule pwr)
+    (rule
+      (width 1000.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)
