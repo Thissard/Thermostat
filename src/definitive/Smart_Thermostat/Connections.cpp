@@ -15,7 +15,7 @@ Connections::Connections(char* ssid, char* pass, IPAddress ip_address, IPAddress
 }
 
 void Connections::begin(void){
-  if (this->_ip_address != NULL && this->_dns_address != NULL && this->_net_mask != NULL && this->_ip_gateway != NULL)
+  //if (this->_ip_address != nullptr && isValid(this->_dns_address) && isValid(this->_net_mask) && isValid(this->_ip_gateway))
     WiFi.config(_ip_address, _dns_address, _net_mask, _ip_gateway);
   WiFi.begin(_ssid, _pass);
 }

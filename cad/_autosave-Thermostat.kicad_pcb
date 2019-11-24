@@ -751,7 +751,7 @@
     (fp_text reference TH2 (at 0.09906 -3.0988 180) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value Thermistor (at -0.39878 4.20116 180) (layer F.Fab)
+    (fp_text value Thermistor (at 0.072 -4.13 180) (layer F.Fab)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start 0 0.8001) (end 0.20066 0.8001) (layer F.SilkS) (width 0.15))

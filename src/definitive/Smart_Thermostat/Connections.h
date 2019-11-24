@@ -15,6 +15,7 @@ class Connections{
     void NTPSetServerName(char* NTPserverName);// setta NTP server
     void NTPBegin(unsigned int localPort); //da lanciare a connessione avvenuta
     IPAddress myIP(void);
+    bool isValid( IPAddress ip);
   private:
     char* _ssid;
     char* _pass;

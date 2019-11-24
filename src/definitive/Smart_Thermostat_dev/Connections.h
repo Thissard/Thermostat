@@ -1,7 +1,7 @@
 #include <TimeLib.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <PubSubClient.h>
+//#include <PubSubClient.h>
 
 
 // NTP
@@ -22,18 +22,18 @@ class Connections{
     IPAddress myIP(void);
 
     //metodi MQTT
-    void MQTTBegin(const char* id);
-    void MQTTBegin(const char* id, const char* user, const char* pass);
-    void MQTTBegin(const char* id, const char* willTopic, uint8_t willQos, boolean willRetain, const char* willMessage);
-    void MQTTBegin(const char* id, const char* user, const char* pass, const char* willTopic, uint8_t willQos, boolean willRetain, const char* willMessage);
-    boolean publish(const char* topic, const char* payload);
-    boolean publish(const char* topic, const char* payload, boolean retained);
-    boolean publish(const char* topic, const uint8_t * payload, unsigned int plength);
-    boolean publish(const char* topic, const uint8_t * payload, unsigned int plength, boolean retained);
-    boolean subscribe(const char* topic);
-    boolean subscribe(const char* topic, uint8_t qos);
-    boolean unsubscribe(const char* topic);
-    void setCallback(MQTT_CALLBACK_SIGNATURE);
+//    void MQTTBegin(const char* id);
+//    void MQTTBegin(const char* id, const char* user, const char* pass);
+//    void MQTTBegin(const char* id, const char* willTopic, uint8_t willQos, boolean willRetain, const char* willMessage);
+//    void MQTTBegin(const char* id, const char* user, const char* pass, const char* willTopic, uint8_t willQos, boolean willRetain, const char* willMessage);
+//    boolean publish(const char* topic, const char* payload);
+//    boolean publish(const char* topic, const char* payload, boolean retained);
+//    boolean publish(const char* topic, const uint8_t * payload, unsigned int plength);
+//    boolean publish(const char* topic, const uint8_t * payload, unsigned int plength, boolean retained);
+//    boolean subscribe(const char* topic);
+//    boolean subscribe(const char* topic, uint8_t qos);
+//    boolean unsubscribe(const char* topic);
+//    void setCallback(MQTT_CALLBACK_SIGNATURE);
     
   private:
     char* _ssid;
@@ -50,8 +50,8 @@ class Connections{
     void sendNTPpacket(IPAddress &address);
     int DTSOffset (unsigned long unixTime);
 
-    IPAddress _mqtt_broker;
-    PubSubClient* _mqtt_client;
+//    IPAddress _mqtt_broker;
+//    PubSubClient* _mqtt_client;
     
 };
 

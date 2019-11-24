@@ -3,7 +3,7 @@
 Connections::Connections(char* ssid, char* pass, IPAddress mqtt_broker){
   this->_ssid = ssid;
   this->_pass = pass;
-  this->_mqtt_broker = mqtt_broker;
+//  this->_mqtt_broker = mqtt_broker;
 }
 
 Connections::Connections(char* ssid, char* pass, IPAddress ip_address, IPAddress dns_address, IPAddress net_mask, IPAddress ip_gateway, IPAddress mqtt_broker){
@@ -13,7 +13,7 @@ Connections::Connections(char* ssid, char* pass, IPAddress ip_address, IPAddress
   this->_dns_address = dns_address;
   this->_net_mask = net_mask;
   this->_ip_gateway = ip_gateway;
-  this->_mqtt_broker = mqtt_broker;
+//  this->_mqtt_broker = mqtt_broker;
 }
 
 void Connections::begin(void){
@@ -21,11 +21,11 @@ void Connections::begin(void){
     WiFi.config(_ip_address, _dns_address, _net_mask, _ip_gateway);
   WiFi.begin(_ssid, _pass);
   
-  WiFiClient espClient;
-  _mqtt_client = new PubSubClient(espClient);
-  _mqtt_client->setServer(_mqtt_broker, 1883);
+//  WiFiClient espClient;
+//  _mqtt_client = new PubSubClient(espClient);
+//  _mqtt_client->setServer(_mqtt_broker, 1883);
 }
-
+/*
 boolean Connections::publish(const char* topic, const char* payload){
   return _mqtt_client->publish(topic,payload);
 }
@@ -51,7 +51,7 @@ boolean Connections::unsubscribe(const char* topic){
 void Connections::setCallback(MQTT_CALLBACK_SIGNATURE) {
  _mqtt_client->setCallback(callback);
 }
-
+*/
 int Connections::connectionStatus(void){
   return WiFi.status();
 }
