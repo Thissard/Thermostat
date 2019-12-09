@@ -76,6 +76,21 @@ void buttonCallback();
 UserCommands encoder(IN_ENC_A, IN_ENC_B, IN_ENC_BUTTON);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TELNET DEBUG
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "RemoteDebug.h"        //https://github.com/JoaoLopesF/RemoteDebug
+#define TELNET_NAME "Thermostat"
+RemoteDebug Debug;
+
+/*
+  debugV("* This is a message of debug level VERBOSE");
+  debugD("* This is a message of debug level DEBUG");
+  debugI("* This is a message of debug level INFO");
+  debugW("* This is a message of debug level WARNING");
+  debugE("* This is a message of debug level ERROR");
+ */
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CODE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 long old_ms_display = 0;
@@ -91,10 +106,9 @@ long ms_thermostat = 0;
 long ms_full_cycle = 0;
 
 void setup(){
-  Serial.begin(9600);
   InitConnection();
   delay(1000);
-
+  
   disp.begin();
   encoder.begin();
   delay(200);
@@ -107,62 +121,48 @@ void setup(){
 
   pinMode(IN_ENC_BUTTON, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(IN_ENC_BUTTON), ISR_callback , FALLING );
+
+  Debug.begin(TELNET_NAME);
+  Debug.setResetCmdEnabled(true); // Enable the reset command
+  Debug.showProfiler(true); // Profiler (Good to measure times, to optimize codes)
+  Debug.showColors(true); // Colors
 }
 
 void loop() {
   encoder.update();
-  //UserCommandsTaskCallback();
+  UserCommandsTaskCallback();
   runner.execute();
+  
+  // Remote debug over WiFi
+  Debug.handle();
+  yield();
 }
 
 void InitScheduler(){
   runner.init();
-  Serial.println("Initialized scheduler");
   runner.addTask(SensorTask);
-  Serial.println("SensorTask scheduled");
   runner.addTask(DisplayTask);
-  Serial.println("DisplayTask scheduled");
   runner.addTask(ThermostatTask);
-  Serial.println("ThermostatTask scheduled");
   runner.addTask(UserCommandsTask);
-  Serial.println("UserCommandsTask scheduled");
   runner.addTask(SerialDiagnosticTask);
-  Serial.println("SerialDiagnosticTask scheduled");
   
   SensorTask.enable();
-  Serial.println("SensorTask enabled");
   DisplayTask.enable();
-  Serial.println("DisplayTask enabled");
   ThermostatTask.enable();
-  Serial.println("ThermostatTask enabled");
   UserCommandsTask.enable();
-  Serial.println("UserCommandsTask enabled");
   SerialDiagnosticTask.enable();
-  Serial.println("SerialDiagnosticTask enabled");
-  }
+}
 
 void InitConnection(){
-  Serial.println("Smart Thermostat Initialization");
-  Serial.print("SSID: ");
-  Serial.println(conf_SSID);
-  Serial.print("Connecting.");
   Conn.begin();
   while (Conn.connectionStatus() != WL_CONNECTED){
     delay(500);
-    Serial.print(".");
   }
-  Serial.println("Connected!");
-  Serial.print("IP: ");
-  Serial.println(Conn.myIP());
-  Serial.println("NTP Connection start");
+
   Conn.NTPBegin(123);
   delay(500);
-  Serial.println("NTP Connection established");
-  Serial.println("Setting NTP server name");
+  
   Conn.NTPSetServerName(NTPServerName);
-  if (Conn.NTPUpdateSystemTime()==0)
-   Serial.println("Cannot get server response");
-  Serial.println("");
 }
 
 void SensorTaskCallback(){
@@ -170,14 +170,14 @@ void SensorTaskCallback(){
   dht.temperature().getEvent(&event);
   
   if (isnan(event.temperature)) {
-    Serial.println("Error reading temperature!");
+    debugE("Error reading temperature!");
   }
   else {
     room_temperature = event.temperature;
   }
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
-    Serial.println("Error reading humidity!");
+    debugE("Error reading humidity!");
   }
   else {
     room_humidity = event.relative_humidity;
@@ -188,7 +188,7 @@ void SensorTaskCallback(){
 void DisplayTaskCallback(){
   switch (MACHINE_STATE){
     case SPLASH_SCREEN: //SPLASH SCREEN SHOW
-      Serial.println("[UPDATE] Display HomeScreen");
+      debugV("[UPDATE] Display HomeScreen");
       disp.clearScreen();
       disp.showSplashScreen(VERSION);
       delay(2000);
@@ -214,6 +214,7 @@ void ThermostatTaskCallback(){
 
   T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
 
+  //used as dummy test!!!
   if (T.get_heater_state())
     temperature_setpoint = room_temperature - 5;
   else
@@ -224,7 +225,7 @@ void ThermostatTaskCallback(){
 void UserCommandsTaskCallback(){
   
   if (encoder.turnedLeft()){
-    Serial.println("LEFT COMMAND");
+    debugV("LEFT COMMAND");
     switch (MACHINE_STATE){
       case MENU_SCREEN:
         if (INDEX > 0)INDEX--;
@@ -236,7 +237,7 @@ void UserCommandsTaskCallback(){
   }
   
   if (encoder.turnedRight()){
-    Serial.println("RIGHT COMMAND");
+    debugV("RIGHT COMMAND");
     switch (MACHINE_STATE){
       case MENU_SCREEN:
         if (INDEX < BACK) INDEX++;
@@ -246,13 +247,14 @@ void UserCommandsTaskCallback(){
        break;
     }
   }
+  
   /*
    ****************
    * NAVIGATION
    ****************
    */
   if (encoder.buttonWasPressed()){
-    Serial.println("BUTTON PRESSED");
+    debugV("BUTTON PRESSED");
     switch (MACHINE_STATE){
       case MAIN_SCREEN:
         disp.clearScreen();
@@ -262,15 +264,15 @@ void UserCommandsTaskCallback(){
         disp.clearScreen();
         switch (INDEX){
           case PROGRAMS:
-          break;
+            break;
           case BRIGHTNESS:
             disp.clearScreen();
             MACHINE_STATE = BRIGHTNESS_SCREEN;
-          break;
+            break;
           case BACK:
             disp.clearScreen();
             MACHINE_STATE = MAIN_SCREEN;
-          break;
+            break;
         }
         break;
       case BRIGHTNESS_SCREEN:
@@ -282,17 +284,12 @@ void UserCommandsTaskCallback(){
 }
 
 void SerialDiagnosticCallback(){
-  
-  Serial.println("[UPDATE] Reading sensors");
-  Serial.print("Room temperature: ");
-  Serial.println(room_temperature);
-  Serial.print("Room humidity: ");
-  Serial.println(room_humidity);
-  Serial.println("[UPDATE] Update Thermostat");
-  Serial.print("Temperature setpoint: ");
-  Serial.println(temperature_setpoint);
-  Serial.print(" Thermostat status: ");
-  Serial.println(T.get_heater_state() ? "ON" : "OFF");
+  debugI("[UPDATE] Reading sensors");
+  debugI("Room temperature: %f", room_temperature);
+  debugI("Room humidity: %f", room_humidity);
+  debugI("[UPDATE] Update Thermostat");
+  debugI("Temperature setpoint: %f ", temperature_setpoint);
+  debugI("Thermostat status: %s", T.get_heater_state() ? "ON" : "OFF"); 
   yield();
 }
 

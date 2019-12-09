@@ -1,5 +1,6 @@
 #include "Connections.h"
 
+
 Connections::Connections(char* ssid, char* pass){
   this->_ssid = ssid;
   this->_pass = pass;
@@ -107,4 +108,3 @@ time_t Connections::getNTPTime(){
   }
   return 0; // return 0 if unable to get the time
 }
-
