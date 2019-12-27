@@ -15,4 +15,3 @@ enum SETPOINTS {
   COMFORT,
   COMFORT_PLUS
 };
-

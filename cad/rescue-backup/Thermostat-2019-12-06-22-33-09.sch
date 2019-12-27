@@ -1,0 +1,607 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:switches
+LIBS:relays
+LIBS:motors
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:wemos_mini
+LIBS:sensors
+LIBS:Thermostat-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L WeMos_mini U1
+U 1 1 5BF1A110
+P 5900 3250
+F 0 "U1" H 5900 3750 60  0000 C CNN
+F 1 "WeMos_mini" H 5900 2750 60  0000 C CNN
+F 2 "wemos_d1_mini:D1_mini_board" H 6450 2550 60  0001 C CNN
+F 3 "" H 6450 2550 60  0000 C CNN
+	1    5900 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Rotary_Encoder_Switch SW1
+U 1 1 5BF1A16C
+P 2350 6650
+F 0 "SW1" H 2350 6910 50  0000 C CNN
+F 1 "Rotary_Encoder_Switch" H 2350 6390 50  0000 C CNN
+F 2 "sparkfun:SF-ROTARY-ENCODER" H 2250 6810 50  0001 C CNN
+F 3 "" H 2350 6910 50  0001 C CNN
+	1    2350 6650
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 5BF1A1B5
+P 1900 6950
+F 0 "#PWR01" H 1900 6700 50  0001 C CNN
+F 1 "GND" H 1900 6800 50  0000 C CNN
+F 2 "" H 1900 6950 50  0001 C CNN
+F 3 "" H 1900 6950 50  0001 C CNN
+	1    1900 6950
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR02
+U 1 1 5BF1A1CD
+P 2850 6950
+F 0 "#PWR02" H 2850 6700 50  0001 C CNN
+F 1 "GND" H 2850 6800 50  0000 C CNN
+F 2 "" H 2850 6950 50  0001 C CNN
+F 3 "" H 2850 6950 50  0001 C CNN
+	1    2850 6950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2650 6750 2850 6750
+Wire Wire Line
+	2850 6750 2850 6950
+Wire Wire Line
+	1900 6950 1900 6650
+Wire Wire Line
+	1900 6650 2050 6650
+Text GLabel 1800 6550 0    39   Input ~ 0
+ENC_A
+Text GLabel 1800 6750 0    39   Input ~ 0
+ENC_B
+Wire Wire Line
+	2050 6550 1800 6550
+Wire Wire Line
+	2050 6750 1800 6750
+Text GLabel 2850 6550 2    39   Input ~ 0
+ENC_BUT
+Wire Wire Line
+	2850 6550 2650 6550
+Text GLabel 5250 3400 0    39   Input ~ 0
+ENC_A
+Text GLabel 5250 3200 0    39   Input ~ 0
+ENC_B
+Text GLabel 6550 3200 2    39   Input ~ 0
+ENC_BUT
+Wire Wire Line
+	6550 3200 6400 3200
+Wire Wire Line
+	5400 3200 5250 3200
+Wire Wire Line
+	5400 3400 5250 3400
+$Comp
+L D D2
+U 1 1 5BF1A2E9
+P 8700 3300
+F 0 "D2" H 8700 3400 50  0000 C CNN
+F 1 "D" H 8700 3200 50  0000 C CNN
+F 2 "Resistors_Universal:Resistor_SMD+THTuniversal_0805to2512_HandSoldering" H 8700 3300 50  0001 C CNN
+F 3 "" H 8700 3300 50  0001 C CNN
+	1    8700 3300
+	0    1    1    0   
+$EndComp
+$Comp
+L C C1
+U 1 1 5BF1A314
+P 3850 5400
+F 0 "C1" H 3875 5500 50  0000 L CNN
+F 1 "C" H 3875 5300 50  0000 L CNN
+F 2 "Resistors_Universal:Resistor_SMD+THTuniversal_0805to2512_HandSoldering" H 3888 5250 50  0001 C CNN
+F 3 "" H 3850 5400 50  0001 C CNN
+	1    3850 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR03
+U 1 1 5BF1A3C7
+P 9100 3700
+F 0 "#PWR03" H 9100 3450 50  0001 C CNN
+F 1 "GND" H 9100 3550 50  0000 C CNN
+F 2 "" H 9100 3700 50  0001 C CNN
+F 3 "" H 9100 3700 50  0001 C CNN
+	1    9100 3700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9100 3600 9100 3700
+Text GLabel 8550 2900 0    39   Input ~ 0
+RELAY
+Wire Wire Line
+	8550 2900 9100 2900
+Wire Wire Line
+	9100 2900 9100 3000
+Wire Wire Line
+	8700 3450 8700 3650
+Wire Wire Line
+	8700 3650 9100 3650
+Connection ~ 9100 3650
+Wire Wire Line
+	8700 3150 8700 2900
+Connection ~ 8700 2900
+$Comp
+L DHT22_Temperature_Humidity TH1
+U 1 1 5BF1A8F7
+P 5200 1450
+F 0 "TH1" V 5550 2000 60  0000 C CNN
+F 1 "DHT22_Temperature_Humidity" V 4850 2250 60  0000 C CNN
+F 2 "Sensors:DHT22_Temperature_Humidity" H 5200 1450 60  0001 C CNN
+F 3 "" H 5200 1450 60  0000 C CNN
+	1    5200 1450
+	0    1    1    0   
+$EndComp
+Text GLabel 6550 3400 2    39   Input ~ 0
+RELAY
+Wire Wire Line
+	6550 3400 6400 3400
+$Comp
+L ILI9341_LCD_Breakout U2
+U 1 1 5BF1ACD0
+P 2100 4950
+F 0 "U2" H 1400 5450 50  0000 L CNN
+F 1 "ILI9341_LCD_Breakout" H 1400 4450 50  0000 L CNN
+F 2 "ILI9431:ILI9431 2,8 TFT" H 1350 5350 50  0001 C CNN
+F 3 "" H 1450 5450 50  0001 C CNN
+	1    2100 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR04
+U 1 1 5BF1ADAF
+P 5100 1250
+F 0 "#PWR04" H 5100 1100 50  0001 C CNN
+F 1 "+3V3" H 5100 1390 50  0000 C CNN
+F 2 "" H 5100 1250 50  0001 C CNN
+F 3 "" H 5100 1250 50  0001 C CNN
+	1    5100 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR05
+U 1 1 5BF1AFE6
+P 5100 1700
+F 0 "#PWR05" H 5100 1450 50  0001 C CNN
+F 1 "GND" H 5100 1550 50  0000 C CNN
+F 2 "" H 5100 1700 50  0001 C CNN
+F 3 "" H 5100 1700 50  0001 C CNN
+	1    5100 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 1600 5100 1600
+Wire Wire Line
+	5100 1600 5100 1700
+Wire Wire Line
+	5200 1300 5100 1300
+Wire Wire Line
+	5100 1300 5100 1250
+Text GLabel 5100 1400 0    39   Input ~ 0
+DHT_22
+Wire Wire Line
+	5100 1400 5200 1400
+Text GLabel 5250 3300 0    39   Input ~ 0
+DHT_22
+Wire Wire Line
+	5400 3300 5250 3300
+$Comp
+L +3V3 #PWR06
+U 1 1 5BF1BA5F
+P 2500 4250
+F 0 "#PWR06" H 2500 4100 50  0001 C CNN
+F 1 "+3V3" H 2500 4390 50  0000 C CNN
+F 2 "" H 2500 4250 50  0001 C CNN
+F 3 "" H 2500 4250 50  0001 C CNN
+	1    2500 4250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2500 4250 2500 4350
+$Comp
+L GND #PWR07
+U 1 1 5BF1BAA5
+P 2500 5800
+F 0 "#PWR07" H 2500 5550 50  0001 C CNN
+F 1 "GND" H 2500 5650 50  0000 C CNN
+F 2 "" H 2500 5800 50  0001 C CNN
+F 3 "" H 2500 5800 50  0001 C CNN
+	1    2500 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2500 5550 2500 5800
+Wire Wire Line
+	2500 4300 3000 4300
+Wire Wire Line
+	3000 4300 3000 5250
+Wire Wire Line
+	3000 5250 2900 5250
+Connection ~ 2500 4300
+Wire Wire Line
+	2900 5150 4050 5150
+Wire Wire Line
+	3850 5150 3850 5250
+Wire Wire Line
+	3850 5550 3850 5700
+Connection ~ 3850 5150
+Text GLabel 4600 5150 2    39   Input ~ 0
+DISP_LED
+Wire Wire Line
+	4600 5150 4350 5150
+$Comp
+L GND #PWR08
+U 1 1 5BF1C39C
+P 3850 5700
+F 0 "#PWR08" H 3850 5450 50  0001 C CNN
+F 1 "GND" H 3850 5550 50  0000 C CNN
+F 2 "" H 3850 5700 50  0001 C CNN
+F 3 "" H 3850 5700 50  0001 C CNN
+	1    3850 5700
+	1    0    0    -1  
+$EndComp
+Text GLabel 3150 5050 2    39   Input ~ 0
+DISP_SCK
+Text GLabel 3150 4850 2    39   Input ~ 0
+DISP_MOSI
+Text GLabel 3150 4750 2    39   Input ~ 0
+DISP_CS
+Text GLabel 3150 4650 2    39   Input ~ 0
+DISP_DC
+Wire Wire Line
+	3150 5050 2900 5050
+Wire Wire Line
+	3150 4850 2900 4850
+Wire Wire Line
+	3150 4750 2900 4750
+Wire Wire Line
+	3150 4650 2900 4650
+Text GLabel 6550 3300 2    39   Input ~ 0
+DISP_SCK
+Wire Wire Line
+	6550 3300 6400 3300
+Text GLabel 6550 3000 2    39   Input ~ 0
+DISP_CS
+Text GLabel 5250 3100 0    39   Input ~ 0
+DISP_DC
+Wire Wire Line
+	5400 3100 5250 3100
+Wire Wire Line
+	6550 3000 6400 3000
+Text GLabel 6550 3100 2    39   Input ~ 0
+DISP_MOSI
+Wire Wire Line
+	6550 3100 6400 3100
+$Comp
+L +3V3 #PWR09
+U 1 1 5BF1D86A
+P 6450 2850
+F 0 "#PWR09" H 6450 2700 50  0001 C CNN
+F 1 "+3V3" H 6450 2990 50  0000 C CNN
+F 2 "" H 6450 2850 50  0001 C CNN
+F 3 "" H 6450 2850 50  0001 C CNN
+	1    6450 2850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6450 2850 6450 2900
+Wire Wire Line
+	6450 2900 6400 2900
+$Comp
+L GND #PWR010
+U 1 1 5BF1DA8F
+P 5350 3750
+F 0 "#PWR010" H 5350 3500 50  0001 C CNN
+F 1 "GND" H 5350 3600 50  0000 C CNN
+F 2 "" H 5350 3750 50  0001 C CNN
+F 3 "" H 5350 3750 50  0001 C CNN
+	1    5350 3750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5400 3000 5350 3000
+Wire Wire Line
+	5350 3000 5350 3750
+Text GLabel 5250 3500 0    39   Input ~ 0
+DISP_LED
+Wire Wire Line
+	5400 3500 5250 3500
+$Comp
+L Screw_Terminal_01x03 J1
+U 1 1 5BF1E701
+P 8900 1450
+F 0 "J1" H 8900 1650 50  0000 C CNN
+F 1 "Screw_Terminal_01x03" H 8900 1250 50  0000 C CNN
+F 2 "Connectors_Phoenix:PhoenixContact_MC-GF_03x5.08mm_Angled_ThreadedFlange" H 8900 1450 50  0001 C CNN
+F 3 "" H 8900 1450 50  0001 C CNN
+	1    8900 1450
+	1    0    0    -1  
+$EndComp
+Text GLabel 9900 3800 3    39   Input ~ 0
+COM1
+Text GLabel 8550 1450 0    39   Input ~ 0
+COM1
+Text GLabel 9800 2850 1    39   Input ~ 0
+NC1
+Text GLabel 8550 1550 0    39   Input ~ 0
+NC1
+Text GLabel 10000 2850 1    39   Input ~ 0
+NO1
+Text GLabel 8550 1350 0    39   Input ~ 0
+NO1
+Wire Wire Line
+	8550 1550 8700 1550
+Wire Wire Line
+	8550 1450 8700 1450
+Wire Wire Line
+	8550 1350 8700 1350
+Wire Wire Line
+	10000 3000 10000 2850
+Wire Wire Line
+	9800 3000 9800 2850
+Wire Wire Line
+	9900 3800 9900 3600
+$Comp
+L Thermistor TH2
+U 1 1 5BF1F319
+P 2000 2300
+F 0 "TH2" V 2100 2350 50  0000 C CNN
+F 1 "Thermistor" V 1900 2300 50  0000 C BNN
+F 2 "Resistors_Universal:Resistor_SMD+THTuniversal_0805to2512_HandSoldering" H 2000 2300 50  0001 C CNN
+F 3 "" H 2000 2300 50  0001 C CNN
+	1    2000 2300
+	0    1    1    0   
+$EndComp
+$Comp
+L D D3
+U 1 1 5BF1F46A
+P 2500 2300
+F 0 "D3" H 2500 2400 50  0000 C CNN
+F 1 "D" H 2500 2200 50  0000 C CNN
+F 2 "Resistors_Universal:Resistor_SMD+THTuniversal_0805to2512_HandSoldering" H 2500 2300 50  0001 C CNN
+F 3 "" H 2500 2300 50  0001 C CNN
+	1    2500 2300
+	-1   0    0    1   
+$EndComp
+$Comp
+L CP1 C2
+U 1 1 5BF1F4CF
+P 2900 2550
+F 0 "C2" H 2925 2650 50  0000 L CNN
+F 1 "CP1" H 2925 2450 50  0000 L CNN
+F 2 "Resistors_Universal:Resistor_SMD+THTuniversal_0805to2512_HandSoldering" H 2900 2550 50  0001 C CNN
+F 3 "" H 2900 2550 50  0001 C CNN
+	1    2900 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR011
+U 1 1 5BF1FCB7
+P 2900 2800
+F 0 "#PWR011" H 2900 2550 50  0001 C CNN
+F 1 "GND" H 2900 2650 50  0000 C CNN
+F 2 "" H 2900 2800 50  0001 C CNN
+F 3 "" H 2900 2800 50  0001 C CNN
+	1    2900 2800
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR012
+U 1 1 5BF1FCE9
+P 1400 2950
+F 0 "#PWR012" H 1400 2700 50  0001 C CNN
+F 1 "GND" H 1400 2800 50  0000 C CNN
+F 2 "" H 1400 2950 50  0001 C CNN
+F 3 "" H 1400 2950 50  0001 C CNN
+	1    1400 2950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2900 2800 2900 2700
+$Comp
+L Screw_Terminal_01x02 J3
+U 1 1 5BF1FD73
+P 1100 2850
+F 0 "J3" H 1100 2950 50  0000 C CNN
+F 1 "Screw_Terminal_01x02" H 1100 2650 50  0000 C CNN
+F 2 "Connectors_Phoenix:PhoenixContact_MC-GF_02x5.08mm_Angled_ThreadedFlange" H 1100 2850 50  0001 C CNN
+F 3 "" H 1100 2850 50  0001 C CNN
+	1    1100 2850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	1300 2750 1500 2750
+Wire Wire Line
+	2900 2200 2900 2400
+Wire Wire Line
+	2650 2300 2900 2300
+Wire Wire Line
+	1300 2850 1400 2850
+Wire Wire Line
+	1400 2850 1400 2950
+$Comp
+L +5V #PWR013
+U 1 1 5BF21191
+P 2900 2200
+F 0 "#PWR013" H 2900 2050 50  0001 C CNN
+F 1 "+5V" H 2900 2340 50  0000 C CNN
+F 2 "" H 2900 2200 50  0001 C CNN
+F 3 "" H 2900 2200 50  0001 C CNN
+	1    2900 2200
+	1    0    0    -1  
+$EndComp
+Connection ~ 2900 2300
+$Comp
+L +5V #PWR014
+U 1 1 5BF21491
+P 5300 2800
+F 0 "#PWR014" H 5300 2650 50  0001 C CNN
+F 1 "+5V" H 5300 2940 50  0000 C CNN
+F 2 "" H 5300 2800 50  0001 C CNN
+F 3 "" H 5300 2800 50  0001 C CNN
+	1    5300 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5400 2900 5300 2900
+Wire Wire Line
+	5300 2900 5300 2800
+$Comp
+L D_Schottky D1
+U 1 1 5BF1B09E
+P 4200 5150
+F 0 "D1" H 4200 5250 50  0000 C CNN
+F 1 "D_Schottky" H 4200 5050 50  0000 C CNN
+F 2 "Resistors_Universal:Resistor_SMD+THTuniversal_0805to2512_HandSoldering" H 4200 5150 50  0001 C CNN
+F 3 "" H 4200 5150 50  0001 C CNN
+	1    4200 5150
+	1    0    0    -1  
+$EndComp
+$Comp
+L xl-007 U3
+U 1 1 5C235005
+P 2250 1300
+F 0 "U3" H 2250 1650 39  0000 C CNN
+F 1 "xl-007" H 2250 1000 39  0000 C CNN
+F 2 "xl007:xl007" H 2150 1300 39  0001 C CNN
+F 3 "" H 2150 1300 39  0001 C CNN
+	1    2250 1300
+	1    0    0    -1  
+$EndComp
+Text GLabel 1650 2300 0    39   Input ~ 0
+pwr
+Wire Wire Line
+	2200 2300 2350 2300
+Text GLabel 1500 2750 2    39   Input ~ 0
+pwr
+Text GLabel 3300 1100 2    39   Input ~ 0
+pwr
+Wire Wire Line
+	2900 1100 2750 1100
+$Comp
+L GND #PWR015
+U 1 1 5C235774
+P 2850 1550
+F 0 "#PWR015" H 2850 1300 50  0001 C CNN
+F 1 "GND" H 2850 1400 50  0000 C CNN
+F 2 "" H 2850 1550 50  0001 C CNN
+F 3 "" H 2850 1550 50  0001 C CNN
+	1    2850 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2750 1450 2850 1450
+Wire Wire Line
+	2850 1450 2850 1550
+$Comp
+L Screw_Terminal_01x02 J4
+U 1 1 5C235B8E
+P 1350 1350
+F 0 "J4" H 1350 1450 50  0000 C CNN
+F 1 "Screw_Terminal_01x02" V 1500 1350 50  0000 C CNN
+F 2 "Connectors_Phoenix:PhoenixContact_MC-GF_02x5.08mm_Angled_ThreadedFlange" H 1350 1350 50  0001 C CNN
+F 3 "" H 1350 1350 50  0001 C CNN
+	1    1350 1350
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	1650 1250 1550 1250
+Wire Wire Line
+	1550 1350 1650 1350
+Wire Wire Line
+	1750 1100 1650 1100
+Wire Wire Line
+	1650 1100 1650 1250
+Wire Wire Line
+	1650 1350 1650 1450
+Wire Wire Line
+	1650 1450 1750 1450
+Wire Notes Line
+	650  3550 3650 3550
+Wire Notes Line
+	3650 3550 3650 650 
+Wire Notes Line
+	3650 650  650  650 
+Wire Notes Line
+	650  650  650  3550
+Text Notes 750  800  0    39   ~ 0
+Power Supply
+$Comp
+L JW2 RL1
+U 1 1 5C2889D7
+P 9500 3300
+F 0 "RL1" H 10150 3450 50  0000 L CNN
+F 1 "JW2" H 10150 3350 50  0000 L CNN
+F 2 "Relays_THT:Relay_DPDT_Omron_G5V-2" H 10150 3250 50  0001 L CNN
+F 3 "" H 9300 3300 50  0001 C CNN
+	1    9500 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L D D4
+U 1 1 5C2A2EFF
+P 3050 1100
+F 0 "D4" H 3050 1200 50  0000 C CNN
+F 1 "D" H 3050 1000 50  0000 C CNN
+F 2 "Resistors_Universal:Resistor_SMD+THTuniversal_0805to2512_HandSoldering" H 3050 1100 50  0001 C CNN
+F 3 "" H 3050 1100 50  0001 C CNN
+	1    3050 1100
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3300 1100 3200 1100
+Wire Wire Line
+	1800 2300 1650 2300
+$EndSCHEMATC

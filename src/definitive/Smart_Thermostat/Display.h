@@ -9,14 +9,10 @@ class Display{
   public:
     Display(int8_t led, int8_t cs, int8_t dc, int8_t sdi_mosi=-1, int8_t sck=-1);
     void clearScreen(void);
-    
     void standby(void);
     void wake_up(void);
-    
     void setBacklight(int backlight);
-    
     void begin(void);
-    
     void showSplashScreen(String project_version);
     void showMainScreen(float temperature, float humidity, uint8_t connectionON, String IP, uint16_t colors[24]);
     void showMenuScreen(int selection);
