@@ -7,6 +7,11 @@
 #include "FS.h"
 #include <ArduinoJson.h>
 
+#define FILE_WRITE "a"
+#define FILE_READ "r"
+
+const char *filename = "/config.json";
+
 struct THERMOSTAT{
   int brightness;
 };
@@ -53,136 +58,173 @@ CONFIG config;
 const char* temp_string;
 
 void setup() {
-  // Initialize Serial port
+  Serial.begin(9600);
+  //load datas from flash and store in configuration
   loadJsonConfiguration();
+  printTestData();
+
+  //change configuration by code and save new configuration to flash
+  config.chrono.setpoints.eco += 13.0;
+  saveJsonConfiguration();
+  
+  //load configuration file again an see if it's saved
+  loadJsonConfiguration();
+  printTestData();
 }
 
 void loop() {
   // not used in this example
-  Serial.println("EVERYTHING FROM JSON IS: ");
-  
-  Serial.print("SSID: ");
-  Serial.println(config.network.SSID);
-
-  Serial.print("Password: ");
-  Serial.println(config.network.password);
-  
-  Serial.print("IP: ");
-  Serial.println(config.network.ip);
-
-  Serial.print("Subnet: ");
-  Serial.println(config.network.subnet);
-
-  Serial.print("DNS: ");
-  Serial.println(config.network.dns);
-
-  delay(1000);
 }
 
 void loadJsonConfiguration(void){
-  Serial.begin(9600);
   SPIFFS.begin();
-  
-  File configFile = SPIFFS.open("/config.json", "r");
-  if (!configFile) {
-    Serial.println("Failed to open config file");
-  }
-  
-  // Allocate the document on the stack.
-  // Don't forget to change the capacity to match your requirements.
-  // Use arduinojson.org/assistant to compute the capacity.
+  File configFile = SPIFFS.open(filename, FILE_READ);
+
   const size_t capacity = 7*JSON_ARRAY_SIZE(24) + JSON_OBJECT_SIZE(1) + 2*JSON_OBJECT_SIZE(4) + 2*JSON_OBJECT_SIZE(7) + 330;
   DynamicJsonDocument doc(capacity);
-
-  // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, configFile);
   
-  size_t size = configFile.size();
-  Serial.print("File size: ");
-  Serial.println(size);
-
-  Serial.print("File Content:");
-  while (configFile.available()) {
-    Serial.write(configFile.read());
+  JsonObject network = doc["network"];
+  temp_string = network["net-name"]; // "TIM-90267905"
+  config.network.SSID = temp_string;
+  temp_string = network["net-pass"]; // "ufSzgF1bBGDlMWhhhG7OYrTC"
+  config.network.password = temp_string;
+  temp_string = network["ip"]; // "192.168.1.222"
+  config.network.ip = temp_string;
+  temp_string = network["sub"]; // "255.255.255.0"
+  config.network.subnet = temp_string;
+  temp_string = network["dns"]; // "192.168.1.1"
+  config.network.dns = temp_string;
+  temp_string = network["gateway"]; // "192.168.1.1"
+  config.network.gateway = temp_string;
+  temp_string = network["ntp-server"]; // "0.it.pool.ntp.org"
+  config.network.NTPServerName = temp_string;
+  
+  JsonObject setpoints = doc["setpoints"];
+  config.chrono.setpoints.eco = setpoints["eco"]; // 18
+  config.chrono.setpoints.normal = setpoints["normal"]; // 21
+  config.chrono.setpoints.comfort= setpoints["comfort"]; // 23
+  config.chrono.setpoints.comfort_p = setpoints["comfort+"]; // 25
+  
+  JsonObject chrono = doc["chrono"];
+  JsonArray chrono_LUN = chrono["LUN"];
+  for (int i = 0; i < 24; i++)
+  {
+      config.chrono.calendar.LUN[i] = chrono_LUN[i];
   }
-  Serial.println();
+  JsonArray chrono_MAR = chrono["MAR"];
+  for (int i = 0; i < 24; i++)
+  {
+      config.chrono.calendar.MAR[i] = chrono_MAR[i];
+  }
+  JsonArray chrono_MER = chrono["MER"];
+  for (int i = 0; i < 24; i++)
+  {
+      config.chrono.calendar.MER[i] = chrono_MER[i];
+  }
+  JsonArray chrono_GIO = chrono["GIO"];
+  for (int i = 0; i < 24; i++)
+  {
+      config.chrono.calendar.GIO[i] = chrono_GIO[i];
+  }
+  JsonArray chrono_VEN = chrono["VEN"];
+  for (int i = 0; i < 24; i++)
+  {
+      config.chrono.calendar.GIO[i] = chrono_VEN[i];
+  }
+  JsonArray chrono_SAB = chrono["SAB"];
+  for (int i = 0; i < 24; i++)
+  {
+      config.chrono.calendar.SAB[i] = chrono_SAB[i];
+  }
+  JsonArray chrono_DOM = chrono["DOM"];
+  for (int i = 0; i < 24; i++)
+  {
+      config.chrono.calendar.DOM[i] = chrono_DOM[i];
+  }
   
-  //const char* json = "{\"network\":{\"net-name\":\"\\"TIM-90267905\\"\",\"net-pass\":\"\\"ufSzgF1bBGDlMWhhhG7OYrTC\\"\",\"ip\":\"\\"192.168.1.222\\"\",\"sub\":\"\\"255.255.255.0\\"\",\"dns\":\"\\"192.168.1.1\\"\",\"gateway\":\"\\"192.168.1.1\\"\",\"ntp-server\":\"\\"0.it.pool.ntp.org\\"\"},\"setpoints\":{\"eco\":18,\"normal\":21,\"comfort\":23,\"comfort+\":25},\"chrono\":{\"Lunedì\":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],\"Martedì\":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],\"Mercoledì\":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],\"Giovedì\":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],\"Venerdì\":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],\"Sabato\":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],\"Domenica\":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18]},\"display\":{\"bright\":100}}";
-  if (error)
-  Serial.println(F("Failed to read file, using default configuration"));
-  Serial.println(error.c_str());
+  int display_bright = doc["display"]["bright"]; // 100
   
-    JsonObject network = doc["network"];
-    temp_string = network["net-name"]; // "TIM-90267905"
-    config.network.SSID = temp_string;
-    temp_string = network["net-pass"]; // "ufSzgF1bBGDlMWhhhG7OYrTC"
-    config.network.password = temp_string;
-    temp_string = network["ip"]; // "192.168.1.222"
-    config.network.ip = temp_string;
-    temp_string = network["sub"]; // "255.255.255.0"
-    config.network.subnet = temp_string;
-    temp_string = network["dns"]; // "192.168.1.1"
-    config.network.dns = temp_string;
-    temp_string = network["gateway"]; // "192.168.1.1"
-    config.network.gateway = temp_string;
-    temp_string = network["ntp-server"]; // "0.it.pool.ntp.org"
-    config.network.NTPServerName = temp_string;
-    
-
-    JsonObject setpoints = doc["setpoints"];
-    config.chrono.setpoints.eco = setpoints["eco"]; // 18
-    config.chrono.setpoints.normal = setpoints["normal"]; // 21
-    config.chrono.setpoints.comfort= setpoints["comfort"]; // 23
-    config.chrono.setpoints.comfort_p = setpoints["comfort+"]; // 25
-
-    JsonObject chrono = doc["chrono"];
-
-    JsonArray chrono_LUN = chrono["LUN"];
-    for (int i = 0; i < 24; i++)
-    {
-        config.chrono.calendar.LUN[i] = chrono_LUN[i];
-    }
-
-    JsonArray chrono_MAR = chrono["MAR"];
-    for (int i = 0; i < 24; i++)
-    {
-        config.chrono.calendar.MAR[i] = chrono_MAR[i];
-    }
-
-    JsonArray chrono_MER = chrono["MER"];
-    for (int i = 0; i < 24; i++)
-    {
-        config.chrono.calendar.MER[i] = chrono_MER[i];
-    }
-    
-    JsonArray chrono_GIO = chrono["GIO"];
-    for (int i = 0; i < 24; i++)
-    {
-        config.chrono.calendar.GIO[i] = chrono_GIO[i];
-    }
-
-    JsonArray chrono_VEN = chrono["VEN"];
-    for (int i = 0; i < 24; i++)
-    {
-        config.chrono.calendar.GIO[i] = chrono_VEN[i];
-    }
-
-    JsonArray chrono_SAB = chrono["SAB"];
-    for (int i = 0; i < 24; i++)
-    {
-        config.chrono.calendar.SAB[i] = chrono_SAB[i];
-    }
-
-    JsonArray chrono_DOM = chrono["DOM"];
-    for (int i = 0; i < 24; i++)
-    {
-        config.chrono.calendar.DOM[i] = chrono_DOM[i];
-    }
-
-    int display_bright = doc["display"]["bright"]; // 100
-
-    configFile.close();
+  configFile.close();
+  SPIFFS.end();
 }
 
+void saveJsonConfiguration(void){
+	SPIFFS.begin();
+	SPIFFS.remove("/config.json");
+  
+  const size_t capacity = 7*JSON_ARRAY_SIZE(24) + JSON_OBJECT_SIZE(1) + 2*JSON_OBJECT_SIZE(4) + 2*JSON_OBJECT_SIZE(7) + 330;
+	DynamicJsonDocument doc(capacity);
+	File configFile = SPIFFS.open(filename, FILE_WRITE);
+	
+	JsonObject network = doc.createNestedObject("network"); 
 
-// Visit https://arduinojson.org/v6/example/generator/ for more.
+	network["net-name"] = config.network.SSID;
+	network["net-pass"] = config.network.password;
+	network["ip"] = config.network.ip;
+	network["sub"] = config.network.subnet;
+	network["dns"] = config.network.dns;
+	network["gateway"] = config.network.gateway;
+	network["ntp-server"] = config.network.NTPServerName;
+  
+	JsonObject setpoints = doc.createNestedObject("setpoints");
+	setpoints["eco"] = config.chrono.setpoints.eco;
+	setpoints["normal"] = config.chrono.setpoints.normal; 
+	setpoints["comfort"] = config.chrono.setpoints.comfort; 
+	setpoints["comfort+"] = config.chrono.setpoints.comfort_p;
+  
+	JsonObject chrono = doc.createNestedObject("chrono");
+	JsonArray chrono_LUN = chrono.createNestedArray("LUN");
+	for (int i = 0; i < 24; i++)
+  {
+		chrono_LUN.add(config.chrono.calendar.LUN[i]);
+	}
+	JsonArray chrono_MAR = chrono.createNestedArray("MAR");
+	for (int i = 0; i < 24; i++)
+  {
+		chrono_MAR.add(config.chrono.calendar.MAR[i]);
+	}
+	JsonArray chrono_MER = chrono.createNestedArray("MER");
+	for (int i = 0; i < 24; i++)
+  {
+		chrono_MER.add(config.chrono.calendar.MER[i]);
+	}
+	JsonArray chrono_GIO = chrono.createNestedArray("GIO");
+	for (int i = 0; i < 24; i++)
+  {
+		chrono_GIO.add(config.chrono.calendar.GIO[i]);
+	}
+	JsonArray chrono_VEN = chrono.createNestedArray("VEN");
+	for (int i = 0; i < 24; i++)
+  {
+		chrono_VEN.add(config.chrono.calendar.VEN[i]);
+	}
+	JsonArray chrono_SAB = chrono.createNestedArray("SAB");
+	for (int i = 0; i < 24; i++)
+  {
+		chrono_SAB.add(config.chrono.calendar.SAB[i]);
+	}
+	JsonArray chrono_DOM = chrono.createNestedArray("DOM");
+	for (int i = 0; i < 24; i++)
+  {
+		chrono_DOM.add(config.chrono.calendar.DOM[i]);
+	}
+	JsonObject display = doc.createNestedObject("display");
+	display["bright"] = 100;
+	serializeJson(doc, configFile);
+}
+
+void printTestData(void){
+  Serial.println("EVERYTHING FROM JSON IS: ");
+
+  Serial.print("SSID: "); //TEST STRING
+  Serial.println(config.network.SSID);
+  Serial.print("IP: ");  //TEST STRING NUMBER
+  Serial.println(config.network.ip);
+  Serial.print("Eco setpoint: "); //REAL VALUE
+  Serial.println(config.chrono.setpoints.eco);
+  Serial.print("MAR 04-05 temp: ");
+  Serial.println(config.chrono.calendar.MAR[4]);
+
+  delay(1000);
+}
