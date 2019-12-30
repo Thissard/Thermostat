@@ -7,9 +7,9 @@
 
 class Connections{
   public:
-    Connections(char* ssid, char* pass);  //costruttore per DHCP
-    Connections(char* ssid, char* pass, IPAddress ip_address,IPAddress dns_address, IPAddress net_mask, IPAddress ip_gateway); //costruttore con indirizzo statico
-    void begin(void); //da lanciare al setup
+    Connections(void);  //costruttore per DHCP
+    void begin(String ssid, String pass); //da lanciare al setup
+    void begin(String ssid, String pass, String ip_address,String dns_address, String net_mask, String ip_gateway); //costruttore con indirizzo statico
     int connectionStatus(void); //restituisce lo stato della connessione
     time_t NTPUpdateSystemTime(void); //setta data e ora dell'ESP
     void NTPSetServerName(char* NTPserverName);// setta NTP server
@@ -17,8 +17,8 @@ class Connections{
     IPAddress myIP(void);
     bool isValid( IPAddress ip);
   private:
-    char* _ssid;
-    char* _pass;
+    String _ssid;
+    String _pass;
     char* _NTPServerName;
     IPAddress _ip_address;
     IPAddress _dns_address;
@@ -30,4 +30,3 @@ class Connections{
     void sendNTPpacket(IPAddress &address);
     int DTSOffset (unsigned long unixTime);
 };
-

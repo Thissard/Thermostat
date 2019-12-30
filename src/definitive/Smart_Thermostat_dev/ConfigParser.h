@@ -4,17 +4,17 @@
 struct THERMOSTAT{
   int brightness;
 };
-/*
+
 struct NETWORK{
-    const char* SSID;
-    const char* password;
-    const char* ip; //dummy
-    const char* subnet; //dummy
-    const char* gateway; //dummy
-    const char* dns; //dummy
-    const char* NTPServerName;
+    String SSID;
+    String password;
+    String ip; //dummy
+    String subnet; //dummy
+    String gateway; //dummy
+    String dns; //dummy
+    String NTPServerName;
 };
-*/
+
 struct SETPOINTS {
     double eco;
     double normal;
@@ -39,16 +39,21 @@ struct CHRONO {
 
 struct CONFIG {
     THERMOSTAT thermostat;
-    //NETWORK network;
+    NETWORK network;
     CHRONO chrono;
 };
 
+#define FILE_WRITE "a"
+#define FILE_READ "r"
+
 class ConfigParser{
   public:
+    ConfigParser(String fileName);
     String loadConfiguration(void);
     String saveConfiguration(void);
     CONFIG config;
 private:
-    File configFile;
-    void deserialize(DynamicJsonDocument doc);
+    File _configFile;
+    void _deserialize(DynamicJsonDocument doc);
+    String _filename;
 };

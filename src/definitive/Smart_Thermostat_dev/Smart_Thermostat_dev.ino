@@ -12,7 +12,7 @@
 #include "ConfigParser.h"
 #define VERSION "v0.0.1"
 
-ConfigParser configurator;
+ConfigParser settings(FILE_NAME);
 
 //////////////////////////////////////
 //PROJECT VARIABLES
@@ -26,6 +26,7 @@ ConfigParser configurator;
 //WIFI + NTP + MQTT
 //////////////////////////////////////
 #include "Connections.h"
+Connections Conn;
 
 //////////////////////////////////////
 // TEMPERATURE SENSOR
@@ -79,26 +80,33 @@ void setup(){
   Serial.println("Sync,Sync,Sync,Sync,Sync");
   delay(500);
   Serial.println();
-  configurator.loadConfiguration();
+  settings.loadConfiguration();
+
+  Conn.begin(settings.config.network.SSID,
+            settings.config.network.password,
+            settings.config.network.ip,
+            settings.config.network.dns,
+            settings.config.network.subnet,
+            settings.config.network.gateway);
   
-  //Debug.begin(TELNET_NAME);
-  //Debug.setResetCmdEnabled(true); // Enable the reset command
-  //Debug.showProfiler(true); // Profiler (Good to measure times, to optimize codes)
-  //Debug.showColors(true); // Colors
+  
+  Debug.begin(TELNET_NAME);
+  Debug.setResetCmdEnabled(true); // Enable the reset command
+  Debug.showProfiler(true); // Profiler (Good to measure times, to optimize codes)
+  Debug.showColors(true); // Colors
 }
 
 const long interval = 1000;           // interval at which to blink (milliseconds)
 unsigned long previousMillis = 0;        // will store last time LED was updated
 
 void loop() {
-    //const char* test = configurator.config.network.ip;
     unsigned long currentMillis = millis();
     
     if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
-    //Serial.print(test);
-    //debugI("%s",test);
-
+    Serial.println(settings.config.network.ip);
+    debugI("%s",settings.config.network.ip.c_str());
+    
     }
   
 // Remote debug over WiFi

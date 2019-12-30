@@ -1,24 +1,26 @@
 #include "Connections.h"
 
 
-Connections::Connections(char* ssid, char* pass){
-  this->_ssid = ssid;
-  this->_pass = pass;
+Connections::Connections(){
 }
 
-Connections::Connections(char* ssid, char* pass, IPAddress ip_address, IPAddress dns_address, IPAddress net_mask, IPAddress ip_gateway){
+void Connections::begin(String ssid, String pass, String ip_address, String dns_address, String net_mask, String ip_gateway){
   this->_ssid = ssid;
   this->_pass = pass;
-  this->_ip_address = ip_address;
-  this->_dns_address = dns_address;
-  this->_net_mask = net_mask;
-  this->_ip_gateway = ip_gateway;
-}
-
-void Connections::begin(void){
+  this->_ip_address.fromString(ip_address);
+  this->_dns_address.fromString(dns_address);
+  this->_net_mask.fromString(net_mask);
+  this->_ip_gateway.fromString(ip_gateway);
   //if (this->_ip_address != nullptr && isValid(this->_dns_address) && isValid(this->_net_mask) && isValid(this->_ip_gateway))
     WiFi.config(_ip_address, _dns_address, _net_mask, _ip_gateway);
-  WiFi.begin(_ssid, _pass);
+  WiFi.begin(_ssid.c_str(), _pass.c_str());
+}
+
+void Connections::begin(String ssid, String pass){
+  this->_ssid = ssid;
+  this->_pass = pass;
+  //if (this->_ip_address != nullptr && isValid(this->_dns_address) && isValid(this->_net_mask) && isValid(this->_ip_gateway))
+  WiFi.begin(_ssid.c_str(), _pass.c_str());
 }
 
 int Connections::connectionStatus(void){
