@@ -9,8 +9,13 @@
 //PROJECT CONFIGURATION
 //////////////////////////////////////
 #include "Configurations.h"
+#include "ConfigParser.h"
 #define VERSION "v0.0.1"
+ConfigParser settings(FILE_NAME);
 
+//////////////////////////////////////
+//PROJECT VARIABLES
+//////////////////////////////////////
 #include <TaskScheduler.h>
 #include <TaskSchedulerDeclarations.h>
 
@@ -27,8 +32,7 @@ Scheduler runner;
 //WIFI + NTP + MQTT
 //////////////////////////////////////
 #include "Connections.h"
-
-Connections Conn(conf_SSID,conf_password,conf_ip,conf_dns,conf_subnet,conf_gateway);
+Connections Conn;
 
 //////////////////////////////////////
 // TEMPERATURE SENSOR
@@ -106,9 +110,13 @@ long ms_thermostat = 0;
 long ms_full_cycle = 0;
 
 void setup(){
+  //read configuration files
+  settings.loadConfiguration();
+  //setup communication
   InitConnection();
   delay(1000);
   
+  //start all the libraries
   disp.begin();
   encoder.begin();
   delay(200);
@@ -117,15 +125,12 @@ void setup(){
   dht.temperature().getSensor(&sensor);
   dht.humidity().getSensor(&sensor);
   
+  //start tasks
   InitScheduler();
 
+  //setup PINS
   pinMode(IN_ENC_BUTTON, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(IN_ENC_BUTTON), ISR_callback , FALLING );
-
-  Debug.begin(TELNET_NAME);
-  Debug.setResetCmdEnabled(true); // Enable the reset command
-  Debug.showProfiler(true); // Profiler (Good to measure times, to optimize codes)
-  Debug.showColors(true); // Colors
 }
 
 void loop() {
@@ -154,15 +159,24 @@ void InitScheduler(){
 }
 
 void InitConnection(){
-  Conn.begin();
+  Conn.begin(settings.config.network.SSID,
+            settings.config.network.password,
+            settings.config.network.ip,
+            settings.config.network.dns,
+            settings.config.network.subnet,
+            settings.config.network.gateway);
+  
   while (Conn.connectionStatus() != WL_CONNECTED){
     delay(500);
   }
-
   Conn.NTPBegin(123);
   delay(500);
+
+  Conn.NTPSetServerName(settings.config.network.NTPServerName);
+  Conn.NTPUpdateSystemTime();
+  Debug.begin(TELNET_NAME);
+  delay(500);
   
-  Conn.NTPSetServerName(NTPServerName);
 }
 
 void SensorTaskCallback(){
@@ -174,6 +188,7 @@ void SensorTaskCallback(){
   }
   else {
     room_temperature = event.temperature;
+    debugV("Temperature: %s",room_temperature);
   }
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
@@ -181,6 +196,7 @@ void SensorTaskCallback(){
   }
   else {
     room_humidity = event.relative_humidity;
+    debugV("Umidity: %s",room_humidity);
   }
 
 }
@@ -213,7 +229,6 @@ void DisplayTaskCallback(){
 void ThermostatTaskCallback(){
 
   T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
-
   //used as dummy test!!!
   if (T.get_heater_state())
     temperature_setpoint = room_temperature - 5;
