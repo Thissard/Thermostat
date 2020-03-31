@@ -10,12 +10,16 @@
 //////////////////////////////////////
 #include "Configurations.h"
 #include "ConfigParser.h"
+
+
 #define VERSION "v0.0.1"
 ConfigParser settings(FILE_NAME);
 
 //////////////////////////////////////
 //PROJECT VARIABLES
 //////////////////////////////////////
+#include "Enumerators.h"
+#include "Structures.h"
 #include <TaskScheduler.h>
 #include <TaskSchedulerDeclarations.h>
 
@@ -108,6 +112,8 @@ long ms_encoder = 0;
 long ms_dht = 0;
 long ms_thermostat = 0;
 long ms_full_cycle = 0;
+
+SETPOINTS setpoints;
 
 void setup(){
   //read configuration files
@@ -234,27 +240,49 @@ void ThermostatTaskCallback(){
 float getSetpoint(){
   int day_of_week = weekday();
   int hour_of_day = hour();
+  int setpoint_index=0;
   switch (day_of_week){
-    case 1: //SUNDAY
-      return settings.config.chrono.calendar.DOM[hour_of_day];
+    case DOMENICA: //SUNDAY
+      setpoint_index = settings.config.chrono.calendar.DOM[hour_of_day];
     break;
-    case 2: //MONDAY
-      return settings.config.chrono.calendar.LUN[hour_of_day];
+    case LUNEDI: //MONDAY
+      setpoint_index = settings.config.chrono.calendar.LUN[hour_of_day];
     break;
-    case 3: //TUESDAY
-      return settings.config.chrono.calendar.MAR[hour_of_day];
+    case MARTEDI: //TUESDAY
+      setpoint_index = settings.config.chrono.calendar.MAR[hour_of_day];
     break;
-    case 4: //WEDNESDAY
-      return settings.config.chrono.calendar.MER[hour_of_day];
+    case MERCOLEDI: //WEDNESDAY
+      setpoint_index = settings.config.chrono.calendar.MER[hour_of_day];
     break;
-    case 5: //THURSDAY
-      return settings.config.chrono.calendar.GIO[hour_of_day];
+    case GIOVEDI: //THURSDAY
+      setpoint_index = settings.config.chrono.calendar.GIO[hour_of_day];
     break;
-    case 6: //FRIDAY
-      return settings.config.chrono.calendar.VEN[hour_of_day];
+    case VENERDI: //FRIDAY
+      setpoint_index = settings.config.chrono.calendar.VEN[hour_of_day];
     break;
-    case 7: //SATURDAY
-      return settings.config.chrono.calendar.SAB[hour_of_day];
+    case SABATO: //SATURDAY
+      setpoint_index = settings.config.chrono.calendar.SAB[hour_of_day];
+    break;
+  }
+  return indexToTemperature(setpoint_index);
+}
+
+float indexToTemperature(int index){
+  switch (index){
+    case OFF:
+      return TEMPERATURE_OFF;
+      break;
+    case ECO:
+      return settings.config.chrono.setpoints.eco;
+    break;
+    case NORMAL:
+      return settings.config.chrono.setpoints.normal;
+    break;
+    case COMFORT:
+      return settings.config.chrono.setpoints.comfort;
+    break;
+    case COMFORT_PLUS:
+      return settings.config.chrono.setpoints.comfort_p;
     break;
   }
 }

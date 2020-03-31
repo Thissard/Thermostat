@@ -1,4 +1,5 @@
 #include "ConfigParser.h"
+#include "Structures.h"
 
 ConfigParser::ConfigParser(String fileName){
   this->_filename = fileName;
@@ -31,7 +32,7 @@ String ConfigParser::loadConfiguration(void){
   JsonObject setpoints = doc["setpoints"];
   config.chrono.setpoints.eco = setpoints["eco"]; // 18
   config.chrono.setpoints.normal = setpoints["normal"]; // 21
-  config.chrono.setpoints.comfort= setpoints["comfort"]; // 23
+  config.chrono.setpoints.comfort = setpoints["comfort"]; // 23
   config.chrono.setpoints.comfort_p = setpoints["comfort+"]; // 25
   
   JsonObject chrono = doc["chrono"];

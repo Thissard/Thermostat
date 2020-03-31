@@ -1,6 +1,8 @@
-#define AUTOMATIC_MODE 1
-#define MANUAL_MODE 0
 
+enum{
+  MANUAL_MODE,
+  AUTOMATIC_MODE,
+};
 
 class Thermostat{
   public:
