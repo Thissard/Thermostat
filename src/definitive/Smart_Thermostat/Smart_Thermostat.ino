@@ -227,14 +227,36 @@ void DisplayTaskCallback(){
 }
 
 void ThermostatTaskCallback(){
+  temperature_setpoint = getSetpoint();
+  T.update(room_temperature, temperature_setpoint);
+}
 
-  T.update(room_temperature, temperature_setpoint);         //TODO EVERY SECOND
-  //used as dummy test!!!
-  if (T.get_heater_state())
-    temperature_setpoint = room_temperature - 5;
-  else
-    temperature_setpoint = room_temperature + 5;
-
+float getSetpoint(){
+  int day_of_week = weekday();
+  int hour_of_day = hour();
+  switch (day_of_week){
+    case 1: //SUNDAY
+      return settings.config.chrono.calendar.DOM[hour_of_day];
+    break;
+    case 2: //MONDAY
+      return settings.config.chrono.calendar.LUN[hour_of_day];
+    break;
+    case 3: //TUESDAY
+      return settings.config.chrono.calendar.MAR[hour_of_day];
+    break;
+    case 4: //WEDNESDAY
+      return settings.config.chrono.calendar.MER[hour_of_day];
+    break;
+    case 5: //THURSDAY
+      return settings.config.chrono.calendar.GIO[hour_of_day];
+    break;
+    case 6: //FRIDAY
+      return settings.config.chrono.calendar.VEN[hour_of_day];
+    break;
+    case 7: //SATURDAY
+      return settings.config.chrono.calendar.SAB[hour_of_day];
+    break;
+  }
 }
 
 void UserCommandsTaskCallback(){
