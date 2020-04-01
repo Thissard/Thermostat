@@ -11,7 +11,6 @@
 #include "Configurations.h"
 #include "ConfigParser.h"
 
-
 #define VERSION "v0.0.1"
 ConfigParser settings(FILE_NAME);
 
