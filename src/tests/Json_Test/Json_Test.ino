@@ -34,13 +34,13 @@ struct SETPOINTS {
 };
 
 struct CALENDAR {
-    double LUN[24];
-    double MAR[24];
-    double MER[24];
-    double GIO[24];
-    double VEN[24];
-    double SAB[24];
-    double DOM[24];
+    int LUN[24];
+    int MAR[24];
+    int MER[24];
+    int GIO[24];
+    int VEN[24];
+    int SAB[24];
+    int DOM[24];
 };
 
 struct CHRONO {
@@ -107,36 +107,43 @@ void loadJsonConfiguration(void){
   config.chrono.setpoints.comfort_p = setpoints["comfort+"]; // 25
   
   JsonObject chrono = doc["chrono"];
+  
   JsonArray chrono_LUN = chrono["LUN"];
   for (int i = 0; i < 24; i++)
   {
       config.chrono.calendar.LUN[i] = chrono_LUN[i];
   }
+  
   JsonArray chrono_MAR = chrono["MAR"];
   for (int i = 0; i < 24; i++)
   {
       config.chrono.calendar.MAR[i] = chrono_MAR[i];
   }
+  
   JsonArray chrono_MER = chrono["MER"];
   for (int i = 0; i < 24; i++)
   {
       config.chrono.calendar.MER[i] = chrono_MER[i];
   }
-  JsonArray chrono_GIO = chrono["GIO"];
+  
+  JsonArray chrono_GIO = chrono["PIPPO"];
   for (int i = 0; i < 24; i++)
   {
       config.chrono.calendar.GIO[i] = chrono_GIO[i];
   }
+  
   JsonArray chrono_VEN = chrono["VEN"];
   for (int i = 0; i < 24; i++)
   {
-      config.chrono.calendar.GIO[i] = chrono_VEN[i];
+      config.chrono.calendar.VEN[i] = chrono_VEN[i];
   }
+  
   JsonArray chrono_SAB = chrono["SAB"];
   for (int i = 0; i < 24; i++)
   {
       config.chrono.calendar.SAB[i] = chrono_SAB[i];
   }
+  
   JsonArray chrono_DOM = chrono["DOM"];
   for (int i = 0; i < 24; i++)
   {
@@ -223,8 +230,34 @@ void printTestData(void){
   Serial.println(config.network.ip);
   Serial.print("Eco setpoint: "); //REAL VALUE
   Serial.println(config.chrono.setpoints.eco);
-  Serial.print("MAR 04-05 temp: ");
-  Serial.println(config.chrono.calendar.MAR[4]);
-
+  
+  Serial.println("DOM temperatures: "); //INTVALUE
+  for (int i=0; i < 4; i++){
+    Serial.println(config.chrono.calendar.DOM[i]);
+  }
+  Serial.println("LUN temperatures: "); //INTVALUE
+  for (int i=0; i < 4; i++){
+    Serial.println(config.chrono.calendar.LUN[i]);
+  }
+  Serial.println("MAR temperatures: "); //INTVALUE
+  for (int i=0; i < 4; i++){
+    Serial.println(config.chrono.calendar.MAR[i]);
+  }
+  Serial.println("MER temperatures: "); //INTVALUE
+  for (int i=0; i < 4; i++){
+    Serial.println(config.chrono.calendar.MER[i]);
+  }
+  Serial.println("GIO temperatures: "); //INTVALUE
+  for (int i=0; i < 4; i++){
+    Serial.println(config.chrono.calendar.GIO[i]);
+  }
+  Serial.println("VEN temperatures: "); //INTVALUE
+  for (int i=0; i < 4; i++){
+    Serial.println(config.chrono.calendar.VEN[i]);
+  }
+  Serial.println("SAB temperatures: "); //INTVALUE
+  for (int i=0; i < 4; i++){
+    Serial.println(config.chrono.calendar.SAB[i]);
+  }
   delay(1000);
 }

@@ -11,16 +11,8 @@
 
 Display disp = Display(TFT_LED, TFT_CS, TFT_CD);
 
-uint16_t colors[24] = {
-    ILI9341_BLUE, ILI9341_BLUE, ILI9341_BLUE, ILI9341_BLUE, // 00 01 02 03
-    ILI9341_BLUE, ILI9341_BLUE, ILI9341_GREEN, ILI9341_GREEN, // 04 05 06 07
-    ILI9341_GREEN, ILI9341_BLUE, ILI9341_BLUE, ILI9341_BLUE, // 08 09 10 11
-    ILI9341_BLUE, 0x2924, 0x2924, ILI9341_BLUE, // 12 13 14 15
-    ILI9341_ORANGE, ILI9341_ORANGE, ILI9341_ORANGE, ILI9341_ORANGE, // 16 17 18 19
-    ILI9341_RED, ILI9341_RED, ILI9341_GREEN, ILI9341_GREEN // 20 21 22 23
-    };
-
 int MACHINE_STATE = 0;
+CONFIG settings;
 
 void setup() {
   Serial.begin(9600);
@@ -29,6 +21,8 @@ void setup() {
 
   pinMode(TFT_LED, OUTPUT);
   analogWrite(TFT_LED, 1024);
+
+  dummyInitialization();
 }
 
 int i = 0;
@@ -48,9 +42,12 @@ void loop(){
       disp.clearScreen();
       MACHINE_STATE=10;
       ms = millis();
+      Serial.print(settings.chrono.calendar.GIO[0]);
+      Serial.print(settings.chrono.calendar.GIO[1]);
+      Serial.print(settings.chrono.calendar.GIO[2]);
       break;
     case 10:
-      disp.showMainScreen(99.9 , te, 3, "127.0.0.1", colors);
+      disp.showMainScreen(99.9 , te, 3, "127.0.0.1", settings );
       if (millis() - ms > 10000){
         MACHINE_STATE = 20;
         disp.clearScreen();
@@ -94,6 +91,47 @@ void loop(){
       }
     break;
   }
+
+  
 }
 
+void dummyInitialization(){
+      settings.chrono.setpoints.eco = 18.0;
+      settings.chrono.setpoints.normal = 20;
+      settings.chrono.setpoints.comfort = 22;
+      settings.chrono.setpoints.comfort_p = 23;
 
+      settings.chrono.calendar.DOM[0]=1;
+      settings.chrono.calendar.DOM[1]=0;
+      settings.chrono.calendar.DOM[2]=2;
+      settings.chrono.calendar.DOM[3]=3;
+      settings.chrono.calendar.DOM[4]=0;
+      settings.chrono.calendar.DOM[5]=4;
+      settings.chrono.calendar.DOM[6]=4;
+      settings.chrono.calendar.DOM[7]=3;
+      settings.chrono.calendar.DOM[8]=2;
+      settings.chrono.calendar.DOM[9]=2;
+      settings.chrono.calendar.DOM[10]=1;
+      settings.chrono.calendar.DOM[11]=1;
+      settings.chrono.calendar.DOM[12]=0;
+      settings.chrono.calendar.DOM[13]=0;
+      settings.chrono.calendar.DOM[14]=1;
+      settings.chrono.calendar.DOM[15]=1;
+      settings.chrono.calendar.DOM[16]=0;
+      settings.chrono.calendar.DOM[17]=0;
+      settings.chrono.calendar.DOM[18]=0;
+      settings.chrono.calendar.DOM[19]=0;
+      settings.chrono.calendar.DOM[20]=0;
+      settings.chrono.calendar.DOM[21]=0;
+      settings.chrono.calendar.DOM[22]=0;
+      settings.chrono.calendar.DOM[23]=0;
+
+      *settings.chrono.calendar.LUN = *settings.chrono.calendar.DOM;
+      *settings.chrono.calendar.MAR= *settings.chrono.calendar.DOM;
+      *settings.chrono.calendar.MER= *settings.chrono.calendar.DOM;
+      *settings.chrono.calendar.GIO= *settings.chrono.calendar.DOM;
+      *settings.chrono.calendar.VEN= *settings.chrono.calendar.DOM;
+      *settings.chrono.calendar.SAB= *settings.chrono.calendar.DOM;
+
+      
+  }

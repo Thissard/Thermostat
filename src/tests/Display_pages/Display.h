@@ -4,6 +4,9 @@
 #include "Adafruit_ILI9341.h"
 #include <Fonts/Gameplay20pt.h>
 #include <Fonts/Classic8pt7b.h>
+#include "Enumerators.h"
+#include "Structures.h"
+
 
 class Display{
   public:
@@ -18,7 +21,7 @@ class Display{
     void begin(void);
     
     void showSplashScreen(String project_version);
-    void showMainScreen(float temperature, float humidity, uint8_t connectionON, String IP, uint16_t colors[24]);
+    void showMainScreen(float temperature, float humidity, uint8_t connectionON, String IP, CONFIG configuration);
     void showMenuScreen(int selection);
     void showBrightness(int selection);
   private:

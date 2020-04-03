@@ -59,7 +59,7 @@ String ConfigParser::loadConfiguration(void){
   JsonArray chrono_VEN = chrono["VEN"];
   for (int i = 0; i < 24; i++)
   {
-      config.chrono.calendar.GIO[i] = chrono_VEN[i];
+      config.chrono.calendar.VEN[i] = chrono_VEN[i];
   }
   JsonArray chrono_SAB = chrono["SAB"];
   for (int i = 0; i < 24; i++)

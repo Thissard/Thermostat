@@ -19,13 +19,13 @@
       double comfort_p;
   };
   struct CALENDAR {
-      double LUN[24];
-      double MAR[24];
-      double MER[24];
-      double GIO[24];
-      double VEN[24];
-      double SAB[24];
-      double DOM[24];
+      int LUN[24];
+      int MAR[24];
+      int MER[24];
+      int GIO[24];
+      int VEN[24];
+      int SAB[24];
+      int DOM[24];
   };
   struct CHRONO {
       SETPOINTS setpoints;
@@ -47,5 +47,7 @@
     uint16_t COMFORT = 0xFD20;     ///< 255, 165,   0
     uint16_t COMFORT_PLUS = 0xF800;///< 255,   0,   0
   };
-
+  
+  extern SQUARE_COLOR square_colors;
+  extern CONFIG settings;
 #endif

@@ -12,7 +12,8 @@
 #include "ConfigParser.h"
 
 #define VERSION "v0.0.1"
-ConfigParser settings(FILE_NAME);
+CONFIG settings;
+ConfigParser json_parser(FILE_NAME);
 
 //////////////////////////////////////
 //PROJECT VARIABLES
@@ -65,15 +66,6 @@ float temperature_setpoint=0;
 
 Display disp = Display(TFT_LED, TFT_CS, TFT_CD);
 
-uint16_t colors[24] = {
-    ILI9341_BLUE, ILI9341_BLUE, ILI9341_BLUE, ILI9341_BLUE, // 00 01 02 03
-    ILI9341_BLUE, ILI9341_BLUE, ILI9341_GREEN, ILI9341_GREEN, // 04 05 06 07
-    ILI9341_GREEN, ILI9341_BLUE, ILI9341_BLUE, ILI9341_BLUE, // 08 09 10 11
-    ILI9341_BLUE, 0x2924, 0x2924, ILI9341_BLUE, // 12 13 14 15
-    ILI9341_ORANGE, ILI9341_ORANGE, ILI9341_ORANGE, ILI9341_ORANGE, // 16 17 18 19
-    ILI9341_RED, ILI9341_RED, ILI9341_GREEN, ILI9341_GREEN // 20 21 22 23
-    };
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // USER COMMANDS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +108,8 @@ SETPOINTS setpoints;
 
 void setup(){
   //read configuration files
-  settings.loadConfiguration();
+  json_parser.loadConfiguration();
+  settings = json_parser.config;
   //setup communication
   InitConnection();
   delay(1000);
@@ -164,12 +157,12 @@ void InitScheduler(){
 }
 
 void InitConnection(){
-  Conn.begin(settings.config.network.SSID,
-            settings.config.network.password,
-            settings.config.network.ip,
-            settings.config.network.dns,
-            settings.config.network.subnet,
-            settings.config.network.gateway);
+  Conn.begin(settings.network.SSID,
+            settings.network.password,
+            settings.network.ip,
+            settings.network.dns,
+            settings.network.subnet,
+            settings.network.gateway);
   
   while (Conn.connectionStatus() != WL_CONNECTED){
     delay(500);
@@ -177,7 +170,7 @@ void InitConnection(){
   Conn.NTPBegin(123);
   delay(500);
 
-  Conn.NTPSetServerName(settings.config.network.NTPServerName);
+  Conn.NTPSetServerName(settings.network.NTPServerName);
   Conn.NTPUpdateSystemTime();
   Debug.begin(TELNET_NAME);
   delay(500);
@@ -217,7 +210,7 @@ void DisplayTaskCallback(){
       MACHINE_STATE=MAIN_SCREEN;
       break;
     case MAIN_SCREEN:
-      disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), colors);
+      disp.showMainScreen(room_temperature , room_humidity, Conn.connectionStatus(), Conn.myIP().toString(), settings);
       break;
     case MENU_SCREEN:
       disp.showMenuScreen(INDEX);
@@ -238,29 +231,30 @@ void ThermostatTaskCallback(){
 
 float getSetpoint(){
   int day_of_week = weekday();
+
   int hour_of_day = hour();
   int setpoint_index=0;
   switch (day_of_week){
     case DOMENICA: //SUNDAY
-      setpoint_index = settings.config.chrono.calendar.DOM[hour_of_day];
+      setpoint_index = settings.chrono.calendar.DOM[hour_of_day];
     break;
     case LUNEDI: //MONDAY
-      setpoint_index = settings.config.chrono.calendar.LUN[hour_of_day];
+      setpoint_index = settings.chrono.calendar.LUN[hour_of_day];
     break;
     case MARTEDI: //TUESDAY
-      setpoint_index = settings.config.chrono.calendar.MAR[hour_of_day];
+      setpoint_index = settings.chrono.calendar.MAR[hour_of_day];
     break;
     case MERCOLEDI: //WEDNESDAY
-      setpoint_index = settings.config.chrono.calendar.MER[hour_of_day];
+      setpoint_index = settings.chrono.calendar.MER[hour_of_day];
     break;
     case GIOVEDI: //THURSDAY
-      setpoint_index = settings.config.chrono.calendar.GIO[hour_of_day];
+      setpoint_index = settings.chrono.calendar.GIO[hour_of_day];
     break;
     case VENERDI: //FRIDAY
-      setpoint_index = settings.config.chrono.calendar.VEN[hour_of_day];
+      setpoint_index = settings.chrono.calendar.VEN[hour_of_day];
     break;
     case SABATO: //SATURDAY
-      setpoint_index = settings.config.chrono.calendar.SAB[hour_of_day];
+      setpoint_index = settings.chrono.calendar.SAB[hour_of_day];
     break;
   }
   return indexToTemperature(setpoint_index);
@@ -272,16 +266,16 @@ float indexToTemperature(int index){
       return TEMPERATURE_OFF;
       break;
     case ECO:
-      return settings.config.chrono.setpoints.eco;
+      return settings.chrono.setpoints.eco;
     break;
     case NORMAL:
-      return settings.config.chrono.setpoints.normal;
+      return settings.chrono.setpoints.normal;
     break;
     case COMFORT:
-      return settings.config.chrono.setpoints.comfort;
+      return settings.chrono.setpoints.comfort;
     break;
     case COMFORT_PLUS:
-      return settings.config.chrono.setpoints.comfort_p;
+      return settings.chrono.setpoints.comfort_p;
     break;
   }
 }
@@ -354,6 +348,10 @@ void SerialDiagnosticCallback(){
   debugI("[UPDATE] Update Thermostat");
   debugI("Temperature setpoint: %f ", temperature_setpoint);
   debugI("Thermostat status: %s", T.get_heater_state() ? "ON" : "OFF"); 
+  debugI("Week of the day: %d", weekday());
+  debugI("Check configuration match:");
+  debugI("Parser: %d", json_parser.config.chrono.calendar.GIO[0]);
+  debugI("Settings: %d", settings.chrono.calendar.GIO[0]);
   yield();
 }
 

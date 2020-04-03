@@ -3,12 +3,60 @@
 
 uint8_t prev_conn_status = -1;
 uint8_t prev_day = -1;
+uint8_t prev_hour = -1;
 uint8_t prev_min = -1;
 uint8_t prev_int_temp = -1;
 uint8_t prev_dec_temp = -1;
 float prev_humidity = -1;
 uint8_t prev_index = -1;
 uint8_t prev_brightness = -1;
+
+SQUARE_COLOR square_colors;
+
+int16_t getColorFromConfig(int hour_index, CONFIG configuration){
+  int setpoint_index;
+  int day_of_week = weekday();
+  switch (day_of_week){
+    case DOMENICA: //SUNDAY
+      setpoint_index = configuration.chrono.calendar.DOM[hour_index];
+    break;
+    case LUNEDI: //MONDAY
+      setpoint_index = configuration.chrono.calendar.LUN[hour_index];
+    break;
+    case MARTEDI: //TUESDAY
+      setpoint_index = configuration.chrono.calendar.MAR[hour_index];
+    break;
+    case MERCOLEDI: //WEDNESDAY
+      setpoint_index = configuration.chrono.calendar.MER[hour_index];
+    break;
+    case GIOVEDI: //THURSDAY
+      setpoint_index = configuration.chrono.calendar.GIO[hour_index];
+    break;
+    case VENERDI: //FRIDAY
+      setpoint_index = configuration.chrono.calendar.VEN[hour_index];
+    break;
+    case SABATO: //SATURDAY
+      setpoint_index = configuration.chrono.calendar.SAB[hour_index];
+    break;
+  }
+  switch (setpoint_index){
+    case OFF:
+      return square_colors.OFF;
+    break;
+    case ECO:
+      return square_colors.ECO;
+    break;
+    case NORMAL:
+      return square_colors.NORMAL;
+    break;
+    case COMFORT:
+      return square_colors.COMFORT;
+    break;
+    case COMFORT_PLUS:
+      return square_colors.COMFORT_PLUS;
+    break;
+  }
+}
 
 Display::Display(int8_t led, int8_t cs, int8_t dc, int8_t sdi_mosi, int8_t sck){
   this->_cs_pin = cs;
@@ -42,6 +90,7 @@ void Display::clearScreen(void){
   prev_humidity = -1;
   prev_index = -1;
   prev_brightness = -1;
+  prev_hour = -1;
   tft->fillScreen(ILI9341_BLACK);
 }
 
@@ -64,7 +113,7 @@ void Display::showSplashScreen(String project_version){
   tft->print(project_version);
 }
 
-void Display::showMainScreen(float temperature, float humidity, uint8_t connection, String IP, uint16_t colors[24]){
+void Display::showMainScreen(float temperature, float humidity, uint8_t connection, String IP, CONFIG configuration){
   //IP
   tft->setFont();
   if (prev_conn_status != connection){
@@ -83,28 +132,28 @@ void Display::showMainScreen(float temperature, float humidity, uint8_t connecti
   }
 
   //chrono Blu
-  tft->fillRect(226,59,11,11,ILI9341_BLUE);
   tft->setFont();
   tft->setTextSize(1);
-  
-   tft->setCursor(240,62);
-   tft->print("Eco      ");
-   tft->print("18.0");
 
-tft->fillRect(226,73,11,11,ILI9341_GREEN);
-   tft->setCursor(240,76);
-   tft->print("Normal   ");
-   tft->print("21.0");
+  tft->fillRect(226,59,11,11, square_colors.ECO);
+  tft->setCursor(240,62);
+  tft->print("Eco      ");
+  tft->printf("%.1f", configuration.chrono.setpoints.eco);
 
-tft->fillRect(226,87,11,11,ILI9341_ORANGE);
-   tft->setCursor(240,90);
-   tft->print("Comfort  ");
-   tft->print("23.0");
+  tft->fillRect(226,73,11,11, square_colors.NORMAL);
+  tft->setCursor(240,76);
+  tft->print("Normal   ");
+  tft->printf("%.1f",configuration.chrono.setpoints.normal);
 
-tft->fillRect(226,101,11,11,ILI9341_RED);
-   tft->setCursor(240,104);
-   tft->print("Comfort+ ");
-   tft->print("25.0");
+  tft->fillRect(226,87,11,11, square_colors.COMFORT);
+  tft->setCursor(240,90);
+  tft->print("Comfort  ");
+  tft->printf("%.1f",configuration.chrono.setpoints.comfort);
+
+  tft->fillRect(226,101,11,11, square_colors.COMFORT_PLUS);
+  tft->setCursor(240,104);
+  tft->print("Comfort+ ");
+  tft->printf("%.1f",configuration.chrono.setpoints.comfort_p);
   
   //Draw Chrono
   word start_x = 6;
@@ -113,22 +162,34 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
 
   word x_i = start_x;
   word l_y = start_y + space;
-  word color;
-  
-  for (int i=0; i <= 24; i++){
-    //Draw Square
-    //NEED TO BLINK
-    if (i!=24)
-      tft->fillRect(x_i,start_y,11,11,colors[i]);
+  word notch;
 
-    //disegna tacche verticali
-    if (i ==0 || i == 12 || i == 24)
-      color = ILI9341_RED;
-    else
-      color = ILI9341_WHITE;
-    tft->fillRect(x_i-2,start_y + space,2,6,color);
+  //clear chrono progression
+  if (prev_hour != hour()){
+    tft->fillRect(0,173,3207,5, ILI9341_BLACK); 
+    prev_hour = hour();
+  }
+
+  for (int i=0; i <= 24; i++){
+    //Draw Squares
     
-    //incrementa valori per passo successivo
+    if (i<24) //draw only 23 squares 
+    {
+      uint16_t color_config = getColorFromConfig(i, configuration);
+      if (i <= hour() ){
+      tft->fillRect(x_i,start_y-7,11,5, ILI9341_WHITE);
+      }
+      tft->fillRect(x_i,start_y,11,11, color_config);
+    } 
+
+    //draw 24 notches
+    if (i ==0 || i == 12 || i == 24)
+      notch = ILI9341_RED;
+    else
+      notch = ILI9341_WHITE;
+    tft->fillRect(x_i-2,start_y + space,2,6, notch);
+    
+    //increase spacer for squares
     x_i=x_i+space;
    }
 
@@ -185,6 +246,7 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     tft->printf("%02d",minute());
     prev_min = minute();
   }
+  
   //TEMPERATURE
   int int_temperature=temperature;
   int dec_temperature=(temperature*10)-(int_temperature*10);
@@ -214,6 +276,8 @@ tft->fillRect(226,101,11,11,ILI9341_RED);
     prev_humidity = humidity;
   }
 }
+
+
 
 void Display::showMenuScreen(int selection){
   tft->setFont();
