@@ -26,7 +26,7 @@
   void SerialDiagnosticCallback();
   
   int MACHINE_STATE = SPLASH_SCREEN;
-  int INDEX = PROGRAMS;
+  int MENU_INDEX = PROGRAMS;
   
   //////////////////////////////////////
   //WIFI

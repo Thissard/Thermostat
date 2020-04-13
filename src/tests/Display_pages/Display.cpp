@@ -346,24 +346,25 @@ void Display::showBrightness(int selection)
 void Display::showProgrammation(int navigation_index, int day_index, int hour_index, int temperature_index, CONFIG configuration)
 {
   //DAY
-  tft->fillScreen(ILI9341_BLACK);
+  tft->setFont();
+  tft->setTextSize(2);
+  tft->setCursor(64, 30);
+  if (navigation_index == CHOOSE_DAY)
+  {
+    tft->print("-> "); //selectd based on navigation_index
+  }
+  else
+  {
+    tft->fillRect(64, 0, 36, 60, ILI9341_BLACK);
+    tft->print("   ");
+  }
   if (day_index != prev_day_index)
   {
-    prev_day_index = day_index;
+    //UPDATE DAY
     //clear day area
-    tft->setFont();
-    tft->setTextSize(2);
-    tft->setCursor(64, 30);
-
-    if (navigation_index == CHOOSE_DAY)
-    {
-      tft->print("-> "); //selectd based on navigation_index
-    }
-    else
-    {
-      tft->print("   ");
-    }
-
+    tft->fillRect(100, 0, 200, 60, ILI9341_BLACK);
+    //clear chrono bar
+    tft->fillRect(0, 180, 320, 60, ILI9341_BLACK);
     switch (day_index)
     {
     case LUNEDI:
@@ -393,45 +394,67 @@ void Display::showProgrammation(int navigation_index, int day_index, int hour_in
     default:
       break;
     }
+    prev_day_index = day_index;
   }
 
   //HOUR
   if (navigation_index >= CHOOSE_TIME)
   {
+    tft->setFont();
+    tft->setTextSize(2);
+    tft->setCursor(64, 90);
+    if (navigation_index == CHOOSE_TIME)
+    {
+      tft->print("-> ");
+    }
+    else
+    {
+      tft->fillRect(64, 60, 36, 60, ILI9341_BLACK);
+      tft->print("   ");
+    }
+
     if (hour_index != prev_hour_index)
     {
-      prev_hour_index = hour_index;
       //clear hour area
-      tft->fillRect(195, 224, 125, 20, ILI9341_BLACK); //clear selection on chrono bar
-      tft->setFont();
-      tft->setTextSize(2);
-      tft->setCursor(64, 90);
-      if (navigation_index == CHOOSE_TIME)
+      tft->fillRect(100, 60, 200, 60, ILI9341_BLACK);
+      prev_hour_index = hour_index;
+      //clear chrono bar
+      tft->fillRect(0, 180, 320, 60, ILI9341_BLACK);
+
+      if (hour_index < 24)
       {
-        tft->print("-> ");
+        if (hour_index < 10)
+          tft->print("0");
+        tft->print(String(hour_index, DEC) + "-");
+        if (hour_index < 9)
+          tft->print("0");
+        tft->print(String(hour_index + 1, DEC)); //selectd based on hours_index
       }
       else
       {
-        tft->print("   ");
+        tft->print("TORNA INDIETRO");
       }
-      if (hour_index < 10)
-        tft->print("0");
-      tft->print(String(hour_index, DEC) + "-");
-      if (hour_index < 9)
-        tft->print("0");
-      tft->print(String(hour_index + 1, DEC)); //selectd based on hours_index
     }
   }
-
-  //CHRONO TEMPERATURES SETPOINTS
-  if (navigation_index == CHOOSE_TEMPERATURE)
+  else
   {
+    tft->fillRect(0, 60, 320, 60, ILI9341_BLACK);
+  }
+
+  if (navigation_index >= CHOOSE_TEMPERATURE)
+  {
+    //CHRONO TEMPERATURES SETPOINTS
     tft->setFont();
     tft->setTextSize(2);
     tft->setCursor(64, 150);
     tft->print("-> ");
+
     if (temperature_index != prev_temperature_index)
     {
+      //clear temperature area
+      tft->fillRect(100, 120, 200, 60, ILI9341_BLACK);
+      //clear chrono bar
+      tft->fillRect(0, 180, 320, 60, ILI9341_BLACK);
       tft->setCursor(114, 150);
       switch (temperature_index)
       {
@@ -453,13 +476,20 @@ void Display::showProgrammation(int navigation_index, int day_index, int hour_in
         break;
       case COMFORT_PLUS:
         tft->print("COMFORT+");
-        tft->fillRect(94, 149, 15, 15, square_colors.COMFORT);
+        tft->fillRect(94, 149, 15, 15, square_colors.COMFORT_PLUS);
         break;
       default:
         break;
       }
+      prev_temperature_index = temperature_index;
     }
   }
+  else
+  {
+    prev_temperature_index = -1;
+    tft->fillRect(0, 120, 320, 60, ILI9341_BLACK);
+  }
+
   //CHRONO VIEW
   word start_x = 6;
   word start_y = 205;
