@@ -39,7 +39,7 @@ void loop()
 {
   int t = millis() / 100;
   float te = t / 10;
-  MACHINE_STATE = PROGRAMMING_SCREEN;
+  MACHINE_STATE = SETPOINTS_SCREEN;
   switch (MACHINE_STATE)
   {
   case SPLASH_SCREEN: //SPLASH SCREEN SHOW
@@ -68,15 +68,15 @@ void loop()
     disp.showMenuScreen(i);
     if (millis() - ms > 1500)
     {
-      if (i == PROGRAMMING)
+      if (i == PROG_CHRONO)
       {
         disp.clearScreen();
-        MACHINE_STATE = PROGRAMMING_SCREEN;
+        MACHINE_STATE = CHRONO_SCREEN;
       }
-      if (i == TEMPERATURES)
+      if (i == PROG_SETPOINTS)
       {
         disp.clearScreen();
-        MACHINE_STATE = TEMPERATURE_SCREEN;
+        MACHINE_STATE = SETPOINTS_SCREEN;
       }
       if (i == BRIGHTNESS)
       {
@@ -86,7 +86,7 @@ void loop()
       i++;
       if (i > BRIGHTNESS)
       {
-        i = PROGRAMMING;
+        i = PROG_CHRONO;
         disp.clearScreen();
         MACHINE_STATE = MAIN_SCREEN;
       }
@@ -113,7 +113,7 @@ void loop()
       MACHINE_STATE = MENU_SCREEN;
     }
     break;
-  case PROGRAMMING_SCREEN:
+  case CHRONO_SCREEN:
     delay(500);
     dummyNavigationIndex++;
     if (dummyNavigationIndex > 2)
@@ -135,12 +135,14 @@ void loop()
       MACHINE_STATE = MENU_SCREEN;
     }
     break;
-  case TEMPERATURE_SCREEN:
+  case SETPOINTS_SCREEN:
     delay(500);
     if (millis() - ms > 4000)
     {
       ms = millis();
       disp.clearScreen();
+      float t_setpoint = 0;
+      disp.showTempSetpointsSettings(0, 0, t_setpoint, settings);
       MACHINE_STATE = MENU_SCREEN;
     }
     break;

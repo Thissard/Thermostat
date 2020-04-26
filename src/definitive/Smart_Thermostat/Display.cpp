@@ -550,3 +550,4 @@ void Display::showProgrammation(int navigation_index, int day_index, int hour_in
   tft->setCursor(298, start_y + space + 8);
   tft->print("23");
 }
+

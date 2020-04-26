@@ -24,6 +24,7 @@ public:
   void showMainScreen(float temperature, float humidity, uint8_t connectionON, String IP, CONFIG configuration);
   void showMenuScreen(int selection);
   void showProgrammation(int navigation_index, int day_index, int hour_index, int temperature_index, CONFIG configuration);
+  void showTempSetpointsSettings(int navigation_index, int setpoint_index, float temperature, CONFIG configuration);
   void showBrightness(int selection);
 
 private:
