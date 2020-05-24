@@ -8,12 +8,14 @@ uint8_t prev_min = -1;
 uint8_t prev_int_temp = -1;
 uint8_t prev_dec_temp = -1;
 float prev_humidity = -1;
+float prev_temperature_setpoint = -1;
 uint8_t prev_index = -1;
 uint8_t prev_brightness = -1;
 uint8_t prev_day_index = -1;
 uint8_t prev_navigation_index = -1;
 uint8_t prev_hour_index = -1;
 uint8_t prev_temperature_index = -1;
+uint8_t prev_setpoint_index = -1;
 
 SQUARE_COLOR square_colors;
 
@@ -97,6 +99,7 @@ void Display::clearScreen(void)
   prev_min = -1;
   prev_int_temp = -1;
   prev_humidity = -1;
+  prev_temperature_setpoint = -1;
   prev_index = -1;
   prev_brightness = -1;
   prev_hour = -1;
@@ -104,6 +107,7 @@ void Display::clearScreen(void)
   prev_navigation_index = -1;
   prev_hour_index = -1;
   prev_temperature_index = -1;
+  prev_setpoint_index = -1;
   tft->fillScreen(ILI9341_BLACK);
 }
 
@@ -388,7 +392,7 @@ void Display::showProgrammation(int navigation_index, int day_index, int hour_in
     case DOMENICA:
       tft->print("DOMENICA"); //selectd based on day_index
       break;
-    case NONE:
+    case NO_DAY:
       tft->print("TORNA INDIETRO"); //selectd based on day_index
       break;
     default:
@@ -551,3 +555,129 @@ void Display::showProgrammation(int navigation_index, int day_index, int hour_in
   tft->print("23");
 }
 
+void Display::showTempSetpointsSettings(int navigation_index, int setpoint_index, float temperature, CONFIG configuration)
+{
+  if (navigation_index != prev_navigation_index)
+  {
+    tft->fillRect(44, 35, 22, 180, ILI9341_BLACK);
+    prev_navigation_index = navigation_index;
+    prev_temperature_setpoint = -1;
+  }
+
+  if (setpoint_index != prev_setpoint_index)
+  {
+    tft->fillRect(212, 35, 22, 145, ILI9341_BLACK);
+    prev_setpoint_index = navigation_index;
+  }
+
+  if (temperature != prev_temperature_setpoint)
+  {
+    tft->fillRect(236, 35, 70, 145, ILI9341_BLACK);
+    prev_temperature_setpoint = temperature;
+  }
+
+  switch (navigation_index)
+  {
+  case ECO:
+    tft->setCursor(44, 40);
+    tft->print("-> ");
+  case NORMAL:
+    tft->setCursor(44, 80);
+    tft->print("-> ");
+    break;
+  case COMFORT:
+    tft->setCursor(44, 120);
+    tft->print("-> ");
+    break;
+  case COMFORT_PLUS:
+    tft->setCursor(44, 160);
+    tft->print("-> ");
+    break;
+  case OFF:
+    tft->setCursor(44, 200);
+    tft->print("-> ");
+    break;
+  default:
+    break;
+  }
+
+  switch (setpoint_index)
+  {
+  case ECO:
+    tft->setCursor(212, 40);
+    tft->print("->");
+  case NORMAL:
+    tft->setCursor(212, 80);
+    tft->print("->");
+    break;
+  case COMFORT:
+    tft->setCursor(212, 120);
+    tft->print("->");
+    break;
+  case COMFORT_PLUS:
+    tft->setCursor(212, 160);
+    tft->print("->");
+    break;
+  default:
+    break;
+  }
+
+  //SETPOINTS
+  tft->setFont();
+  tft->setTextSize(2);
+
+  tft->fillRect(71, 39, 15, 15, square_colors.ECO);
+  tft->setCursor(90, 40);
+  tft->print("ECO");
+  tft->setCursor(200, 40);
+  tft->print(":");
+  tft->setCursor(236, 40);
+  tft->printf("%.1f", configuration.chrono.setpoints.eco);
+  tft->print(" C");
+  tft->setTextSize(1);
+  tft->setCursor(287, 38);
+  tft->print("o");
+
+  tft->setTextSize(2);
+  tft->fillRect(71, 79, 15, 15, square_colors.NORMAL);
+  tft->setCursor(90, 80);
+  tft->print("NORMAL");
+  tft->setCursor(200, 80);
+  tft->print(":");
+  tft->setCursor(236, 80);
+  tft->printf("%.1f", configuration.chrono.setpoints.normal);
+  tft->print(" C");
+  tft->setTextSize(1);
+  tft->setCursor(287, 78);
+  tft->print("o");
+
+  tft->setTextSize(2);
+  tft->fillRect(71, 119, 15, 15, square_colors.COMFORT);
+  tft->setCursor(90, 120);
+  tft->print("COMFORT");
+  tft->setCursor(200, 120);
+  tft->print(":");
+  tft->setCursor(236, 120);
+  tft->printf("%.1f", configuration.chrono.setpoints.comfort);
+  tft->print(" C");
+  tft->setTextSize(1);
+  tft->setCursor(287, 118);
+  tft->print("o");
+
+  tft->setTextSize(2);
+  tft->fillRect(71, 159, 15, 15, square_colors.COMFORT_PLUS);
+  tft->setCursor(90, 160);
+  tft->print("COMFORT+");
+  tft->setCursor(200, 160);
+  tft->print(":");
+  tft->setCursor(236, 160);
+  tft->printf("%.1f", configuration.chrono.setpoints.comfort_p);
+  tft->print(" C");
+  tft->setTextSize(1);
+  tft->setCursor(287, 158);
+  tft->print("o");
+
+  tft->setTextSize(2);
+  tft->setCursor(90, 200);
+  tft->print("INDIETRO");
+}

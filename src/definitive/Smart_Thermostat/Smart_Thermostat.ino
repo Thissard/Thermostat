@@ -89,6 +89,7 @@ RemoteDebug Debug;
   debugW("* This is a message of debug level WARNING");
   debugE("* This is a message of debug level ERROR");
  */
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CODE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,14 +109,15 @@ SETPOINTS setpoints;
 
 void setup()
 {
-  //read configuration files
+  //read configuration file
   json_parser.loadConfiguration();
   settings = json_parser.config;
-  //setup communication
+
+  //start communication
   InitConnection();
   delay(1000);
 
-  //start all the libraries
+  //start all the modules
   disp.begin();
   encoder.begin();
   delay(200);
@@ -229,8 +231,27 @@ void DisplayTaskCallback()
     disp.showBrightness(BRIGHT);
     disp.setBacklight(BRIGHT);
     break;
-  case PROGRAMMING_SCREEN:
-    disp.showProgrammation(PROGRAMMING_NAV_INDEX, PROGRAMMING_DAY_INDEX, PROGRAMMING_TIME_INDEX, PROGRAMMING_TEMP_INDEX, settings);
+  case CHRONO_SCREEN:
+    disp.showProgrammation(PROGRAMMING_CHRONO_NAV_INDEX, PROGRAMMING_CHRONO_DAY_INDEX, PROGRAMMING_CHRONO_TIME_INDEX, PROGRAMMING_CHRONO_TEMP_INDEX, settings);
+    break;
+  case SETPOINTS_SCREEN:
+    double t_setpoint;
+    switch (PROGRAMMING_SETPOINT_PROGRAM_INDEX)
+    {
+    case ECO:
+      t_setpoint = settings.chrono.setpoints.eco;
+      break;
+    case NORMAL:
+      t_setpoint = settings.chrono.setpoints.normal;
+      break;
+    case COMFORT:
+      t_setpoint = settings.chrono.setpoints.comfort;
+      break;
+    case COMFORT_PLUS:
+      t_setpoint = settings.chrono.setpoints.comfort_p;
+      break;
+    }
+    disp.showTempSetpointsSettings(PROGRAMMING_SETPOINT_NAV_INDEX, PROGRAMMING_SETPOINT_PROGRAM_INDEX, t_setpoint, settings);
     break;
   }
 }
@@ -312,23 +333,50 @@ void UserCommandsTaskCallback()
       if (BRIGHT > 10)
         BRIGHT = BRIGHT - 10;
       break;
-    case PROGRAMMING_SCREEN:
-      switch (PROGRAMMING_NAV_INDEX)
+    case CHRONO_SCREEN:
+      switch (PROGRAMMING_CHRONO_NAV_INDEX)
       {
       case CHOOSE_DAY:
-        PROGRAMMING_DAY_INDEX--;
-        if (PROGRAMMING_DAY_INDEX < DOMENICA)
-          PROGRAMMING_DAY_INDEX = SABATO;
+        PROGRAMMING_CHRONO_DAY_INDEX--;
+        if (PROGRAMMING_CHRONO_DAY_INDEX < DOMENICA)
+          PROGRAMMING_CHRONO_DAY_INDEX = SABATO;
         break;
       case CHOOSE_TIME:
-        PROGRAMMING_TIME_INDEX--;
-        if (PROGRAMMING_TIME_INDEX < 0)
-          PROGRAMMING_TIME_INDEX = 24;
+        PROGRAMMING_CHRONO_TIME_INDEX--;
+        if (PROGRAMMING_CHRONO_TIME_INDEX < 0)
+          PROGRAMMING_CHRONO_TIME_INDEX = 24;
         break;
       case CHOOSE_TEMPERATURE:
-        PROGRAMMING_TEMP_INDEX--;
-        if (PROGRAMMING_TEMP_INDEX < OFF)
-          PROGRAMMING_TEMP_INDEX = COMFORT_PLUS;
+        PROGRAMMING_CHRONO_TEMP_INDEX--;
+        if (PROGRAMMING_CHRONO_TEMP_INDEX < OFF)
+          PROGRAMMING_CHRONO_TEMP_INDEX = COMFORT_PLUS;
+        break;
+      }
+      break;
+    case SETPOINTS_SCREEN:
+      switch (PROGRAMMING_SETPOINT_NAV_INDEX)
+      {
+      case CHOOSE_PROGRAM:
+        PROGRAMMING_SETPOINT_PROGRAM_INDEX--;
+        if (PROGRAMMING_SETPOINT_PROGRAM_INDEX < OFF)
+          PROGRAMMING_SETPOINT_PROGRAM_INDEX = COMFORT_PLUS;
+        break;
+      case CHOOSE_SETPOINT:
+        switch (PROGRAMMING_SETPOINT_PROGRAM_INDEX)
+        {
+        case ECO:
+          settings.chrono.setpoints.eco -= PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        case NORMAL:
+          settings.chrono.setpoints.normal -= PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        case COMFORT:
+          settings.chrono.setpoints.comfort -= PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        case COMFORT_PLUS:
+          settings.chrono.setpoints.comfort_p -= PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        }
         break;
       }
       break;
@@ -348,23 +396,51 @@ void UserCommandsTaskCallback()
       if (BRIGHT < 100)
         BRIGHT = BRIGHT + 10;
       break;
-    case PROGRAMMING_SCREEN:
-      switch (PROGRAMMING_NAV_INDEX)
+    case CHRONO_SCREEN:
+      switch (PROGRAMMING_CHRONO_NAV_INDEX)
       {
       case CHOOSE_DAY:
-        PROGRAMMING_DAY_INDEX++;
-        if (PROGRAMMING_DAY_INDEX > SABATO)
-          PROGRAMMING_DAY_INDEX = 0;
+        PROGRAMMING_CHRONO_DAY_INDEX++;
+        if (PROGRAMMING_CHRONO_DAY_INDEX > SABATO)
+          PROGRAMMING_CHRONO_DAY_INDEX = 0;
         break;
       case CHOOSE_TIME:
-        PROGRAMMING_TIME_INDEX++;
-        if (PROGRAMMING_TIME_INDEX > 24)
-          PROGRAMMING_TIME_INDEX = 0;
+        PROGRAMMING_CHRONO_TIME_INDEX++;
+        if (PROGRAMMING_CHRONO_TIME_INDEX > 24)
+          PROGRAMMING_CHRONO_TIME_INDEX = 0;
         break;
       case CHOOSE_TEMPERATURE:
-        PROGRAMMING_TEMP_INDEX++;
-        if (PROGRAMMING_TEMP_INDEX > COMFORT_PLUS)
-          PROGRAMMING_TEMP_INDEX = 0;
+        PROGRAMMING_CHRONO_TEMP_INDEX++;
+        if (PROGRAMMING_CHRONO_TEMP_INDEX > COMFORT_PLUS)
+          PROGRAMMING_CHRONO_TEMP_INDEX = 0;
+        break;
+      }
+      break;
+    case SETPOINTS_SCREEN:
+      switch (PROGRAMMING_SETPOINT_NAV_INDEX)
+      {
+      case CHOOSE_PROGRAM:
+        PROGRAMMING_SETPOINT_PROGRAM_INDEX++;
+        if (PROGRAMMING_SETPOINT_PROGRAM_INDEX > COMFORT_PLUS)
+          PROGRAMMING_SETPOINT_PROGRAM_INDEX = OFF;
+        break;
+      case CHOOSE_SETPOINT:
+        //increase actual setpoint
+        switch (PROGRAMMING_SETPOINT_PROGRAM_INDEX)
+        {
+        case ECO:
+          settings.chrono.setpoints.eco += PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        case NORMAL:
+          settings.chrono.setpoints.normal += PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        case COMFORT:
+          settings.chrono.setpoints.comfort += PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        case COMFORT_PLUS:
+          settings.chrono.setpoints.comfort_p += PROGRAMMING_SETPOINT_INCREMENT;
+          break;
+        }
         break;
       }
       break;
@@ -391,7 +467,7 @@ void UserCommandsTaskCallback()
       {
       case PROGRAMMING:
         disp.clearScreen();
-        MACHINE_STATE = PROGRAMMING_SCREEN;
+        MACHINE_STATE = CHRONO_SCREEN;
         break;
       case BRIGHTNESS:
         disp.clearScreen();
@@ -407,63 +483,79 @@ void UserCommandsTaskCallback()
       disp.clearScreen();
       MACHINE_STATE = MENU_SCREEN;
       break;
-    case PROGRAMMING_SCREEN:
-      switch (PROGRAMMING_NAV_INDEX)
+    case CHRONO_SCREEN:
+      switch (PROGRAMMING_CHRONO_NAV_INDEX)
       {
       case CHOOSE_DAY:
-        if (PROGRAMMING_DAY_INDEX == NONE)
+        if (PROGRAMMING_CHRONO_DAY_INDEX == NO_DAY)
         {
           disp.clearScreen();
           MACHINE_STATE = MENU_SCREEN;
         }
         else
         {
-          PROGRAMMING_NAV_INDEX++;
+          PROGRAMMING_CHRONO_NAV_INDEX++;
         }
         break;
       case CHOOSE_TIME:
-        if (PROGRAMMING_TIME_INDEX == 24)
+        if (PROGRAMMING_CHRONO_TIME_INDEX == 24)
         {
-          PROGRAMMING_NAV_INDEX--;
+          PROGRAMMING_CHRONO_NAV_INDEX--;
         }
         else
         {
-          PROGRAMMING_NAV_INDEX++;
+          PROGRAMMING_CHRONO_NAV_INDEX++;
         }
         break;
       case CHOOSE_TEMPERATURE:
-        PROGRAMMING_NAV_INDEX--;
+        PROGRAMMING_CHRONO_NAV_INDEX--;
         //SELECTION CONFIRMED
         //SAVE SETTINGS
-        switch (PROGRAMMING_DAY_INDEX)
+        switch (PROGRAMMING_CHRONO_DAY_INDEX)
         {
         case DOMENICA:
-          settings.chrono.calendar.DOM[PROGRAMMING_TIME_INDEX] = PROGRAMMING_TEMP_INDEX;
+          settings.chrono.calendar.DOM[PROGRAMMING_CHRONO_TIME_INDEX] = PROGRAMMING_CHRONO_TEMP_INDEX;
           break;
         case LUNEDI:
-          settings.chrono.calendar.LUN[PROGRAMMING_TIME_INDEX] = PROGRAMMING_TEMP_INDEX;
+          settings.chrono.calendar.LUN[PROGRAMMING_CHRONO_TIME_INDEX] = PROGRAMMING_CHRONO_TEMP_INDEX;
           break;
         case MARTEDI:
-          settings.chrono.calendar.MAR[PROGRAMMING_TIME_INDEX] = PROGRAMMING_TEMP_INDEX;
+          settings.chrono.calendar.MAR[PROGRAMMING_CHRONO_TIME_INDEX] = PROGRAMMING_CHRONO_TEMP_INDEX;
           break;
         case MERCOLEDI:
-          settings.chrono.calendar.MER[PROGRAMMING_TIME_INDEX] = PROGRAMMING_TEMP_INDEX;
+          settings.chrono.calendar.MER[PROGRAMMING_CHRONO_TIME_INDEX] = PROGRAMMING_CHRONO_TEMP_INDEX;
           break;
         case GIOVEDI:
-          settings.chrono.calendar.GIO[PROGRAMMING_TIME_INDEX] = PROGRAMMING_TEMP_INDEX;
+          settings.chrono.calendar.GIO[PROGRAMMING_CHRONO_TIME_INDEX] = PROGRAMMING_CHRONO_TEMP_INDEX;
           break;
         case VENERDI:
-          settings.chrono.calendar.VEN[PROGRAMMING_TIME_INDEX] = PROGRAMMING_TEMP_INDEX;
+          settings.chrono.calendar.VEN[PROGRAMMING_CHRONO_TIME_INDEX] = PROGRAMMING_CHRONO_TEMP_INDEX;
           break;
         case SABATO:
-          settings.chrono.calendar.SAB[PROGRAMMING_TIME_INDEX] = PROGRAMMING_TEMP_INDEX;
+          settings.chrono.calendar.SAB[PROGRAMMING_CHRONO_TIME_INDEX] = PROGRAMMING_CHRONO_TEMP_INDEX;
           break;
         }
         json_parser.config = settings;   //update structure
         json_parser.saveConfiguration(); //save new settings
         break;
       }
-
+      break;
+    case SETPOINTS_SCREEN:
+      switch (PROGRAMMING_SETPOINT_NAV_INDEX)
+      {
+      case CHOOSE_PROGRAM:
+        if (PROGRAMMING_SETPOINT_NAV_INDEX == OFF)
+        {
+          json_parser.config = settings;   //update structure
+          json_parser.saveConfiguration(); //save new settings
+        }
+        else
+          PROGRAMMING_SETPOINT_NAV_INDEX++;
+        break;
+      case CHOOSE_SETPOINT:
+        PROGRAMMING_SETPOINT_NAV_INDEX--;
+        break;
+      }
       break;
     }
   }
